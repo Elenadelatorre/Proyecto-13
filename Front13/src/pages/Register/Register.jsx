@@ -1,9 +1,10 @@
-// src/pages/Login/Login.jsx
+// src/pages/Register/Register.jsx
 import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Input, Stack, Text, useToast, Link } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Register = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -11,37 +12,33 @@ const Login = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/users/login', {
+      const response = await fetch('/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, contraseña: password })
+        body: JSON.stringify({ nombre: name, email, contraseña: password })
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData || 'Error al iniciar sesión');
+        throw new Error(errorData || 'Error al registrar el usuario');
       }
 
-      const { token, user } = await response.json();
-
-      // Almacena el token y la información del usuario según sea necesario (por ejemplo, en el localStorage)
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      const { message } = await response.json();
 
       toast({
-        title: 'Inicio de sesión exitoso.',
-        description: 'Has iniciado sesión correctamente.',
+        title: 'Registro exitoso.',
+        description: message,
         status: 'success',
         duration: 4000,
         isClosable: true
       });
 
-      navigate('/'); 
+      navigate('/login'); // Redirige a la página de inicio de sesión después del registro
     } catch (error) {
       setError(error.message);
       toast({
@@ -73,9 +70,19 @@ const Login = () => {
         bg='white'
       >
         <Text fontSize='2xl' mb='4' textAlign='center' fontWeight='bold' color='var(--rtc-color-4)'>
-          Iniciar Sesión
+          Registro
         </Text>
         <Stack spacing='4'>
+          <FormControl id='name' isRequired>
+            <FormLabel color='var(--rtc-color-4)'>Nombre completo</FormLabel>
+            <Input
+              type='text'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder='Nombre completo'
+              color='var(--rtc-color-4)'
+            />
+          </FormControl>
           <FormControl id='email' isRequired>
             <FormLabel color='var(--rtc-color-4)'>Email</FormLabel>
             <Input
@@ -100,14 +107,14 @@ const Login = () => {
           <Button
             colorScheme='yellow' bg='var(--rtc-color-2)'
             isLoading={loading}
-            onClick={handleLogin}
+            onClick={handleRegister}
           >
-            Iniciar Sesión
+            Registrarse
           </Button>
           <Text fontSize='sm' mt='4' textAlign='center' color='var(--rtc-color-4)'>
-            ¿No tienes una cuenta?{' '}
-            <Link color='blue.500' onClick={() => navigate('/register')}>
-              Regístrate aquí
+            ¿Ya tienes una cuenta?{' '}
+            <Link color='blue.500' onClick={() => navigate('/login')}>
+              Inicia sesión aquí
             </Link>
           </Text>
         </Stack>
@@ -116,4 +123,5 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
+

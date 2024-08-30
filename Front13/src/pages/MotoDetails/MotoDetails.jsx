@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Text, Image, Spinner, VStack, Divider, Button, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Text,
+  Image,
+  Spinner,
+  VStack,
+  Divider,
+  Button,
+  useToast
+} from '@chakra-ui/react';
 import useMoto from '../../hooks/useMoto';
 import MotoStatus from '../../components/MotoDetails/MotoStatus';
 import StarRating from '../../components/MotoDetails/StarRating';
@@ -27,7 +36,7 @@ const MotoDetails = () => {
 
   const handleReserve = () => {
     if (moto.estado === 'Disponible') {
-      setMoto(prevMoto => ({
+      setMoto((prevMoto) => ({
         ...prevMoto,
         estado: 'No disponible'
       }));
@@ -49,25 +58,54 @@ const MotoDetails = () => {
   if (!moto) return <Text color='red.500'>Moto no encontrada</Text>;
 
   return (
-    <Box display='flex' alignItems='center' justifyContent='center' minH='100vh' p='5'>
-      <Box p='8' borderRadius='md' boxShadow='md' maxW='container.md' w='full' bg='white' position='relative'>
+    <Box
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+      minH='100vh'
+      p='5'
+    >
+      <Box
+        p='8'
+        borderRadius='md'
+        boxShadow='md'
+        maxW='container.md'
+        w='full'
+        bg='white'
+        position='relative'
+      >
         <MotoStatus estado={moto.estado} />
-        
+
         <VStack spacing='4' align='stretch'>
           <Text fontSize='3xl' fontWeight='bold' color='var(--rtc-color-4)'>
-            {moto.marca} {moto.modelo} ({moto.año})
+            {moto.marca}
+          </Text>
+          <Text fontSize='xl' fontWeight='bold' color='var(--rtc-color-4)'>
+            {moto.modelo} ({moto.año})
           </Text>
 
           <Image
-            src={moto.imagen || '/default-image.png'}
-            alt={`${moto.marca} ${moto.modelo}`}
-            boxSize={{ base: '300px', md: '500px' }}
-            objectFit='cover'
-            m='auto'
-          />
+  src={moto.imagen || '/default-image.png'}
+  alt={`${moto.marca} ${moto.modelo}`}
+  boxSize={{ base: '300px', md: '500px' }} // Tamaño adaptativo
+  objectFit='contain' // Ajusta la imagen sin recortes
+  maxWidth='100%' // Asegura que la imagen no sobrepase el contenedor
+  maxHeight='100%' // Asegura que la imagen no sobrepase el contenedor
+  m='auto' // Centra la imagen
+/>
 
-          <Text fontSize='3xl' fontWeight='bold' color='red.500' textAlign='center' mt='4'>
-            {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(moto.precio)} / día
+          <Text
+            fontSize='3xl'
+            fontWeight='bold'
+            color='red.500'
+            textAlign='center'
+            mt='4'
+          >
+            {new Intl.NumberFormat('es-ES', {
+              style: 'currency',
+              currency: 'EUR'
+            }).format(moto.precio)}{' '}
+            / día
           </Text>
 
           <Button
@@ -77,7 +115,9 @@ const MotoDetails = () => {
             onClick={handleReserve}
             isDisabled={moto.estado !== 'Disponible'}
           >
-            {moto.estado === 'No disponible' ? 'Moto Reservada' : 'Reservar Moto'}
+            {moto.estado === 'No disponible'
+              ? 'Moto Reservada'
+              : 'Reservar Moto'}
           </Button>
 
           <Text fontSize='lg' fontWeight='medium' color='var(--rtc-color-4)'>
@@ -102,7 +142,13 @@ const MotoDetails = () => {
             <Text fontSize='md' color='var(--rtc-color-4)'>
               Email: {moto.propietario?.email || 'No disponible'}
             </Text>
-            <Button size='sm' mt='2' colorScheme='yellow' bg='var(--rtc-color-2)' onClick={openContactModal}>
+            <Button
+              size='sm'
+              mt='2'
+              colorScheme='yellow'
+              bg='var(--rtc-color-2)'
+              onClick={openContactModal}
+            >
               Contactar
             </Button>
           </Box>

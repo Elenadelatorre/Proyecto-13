@@ -12,6 +12,7 @@ import { Box } from '@chakra-ui/react';
 import { useContext } from 'react';
 import { ThemeContext } from './Providers/ThemeProvider';
 import MotoDetails from './pages/MotoDetails/MotoDetails';
+import Register from './pages/Register/Register';
 
 function App() {
   const { light } = useContext(ThemeContext);
@@ -27,6 +28,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />}></Route>
         <Route path='/login' element={<Login />}></Route>
+        <Route path='/register' element={<Register />}></Route>
         <Route path='/motos' element={<Motos />}></Route>
         <Route path='/motos/:id' element={<MotoDetails />}></Route>
         <Route path='/reviews' element={<Reviews />}></Route>
