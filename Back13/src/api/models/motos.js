@@ -54,8 +54,10 @@ const motoSchema = new mongoose.Schema(
     },
     propietario: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'users'
-    }
+      ref: 'users',
+      required: true
+    },
+    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: 'reviews' }]
   },
   { timestamps: true, collection: 'motos' }
 );

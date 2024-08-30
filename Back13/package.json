@@ -1,20 +1,17 @@
 {
   "name": "back13",
-  "private": true,
   "version": "0.0.0",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "vite build",
-    "preview": "vite preview"
+    "motosSeeds": "node ./src/utils/seeds/motosSeeds.js"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4",
-    "vite": "^5.4.1"
+    "nodemon": "^3.1.4"
   },
-  "main": "index.js",
   "keywords": [],
-  "author": "",
+  "author": "Elena de la Torre López",
   "license": "ISC",
   "description": "",
   "dependencies": {

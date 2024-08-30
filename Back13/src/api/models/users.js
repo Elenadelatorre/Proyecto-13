@@ -22,8 +22,8 @@ const userSchema = new mongoose.Schema(
     rol: {
       type: String,
       required: true,
-      default: 'user',
-      enum: ['admin', 'user']
+      default: 'Arrendatario',
+      enum: ['Arrendatario', 'Propietario']
     }
   },
   { timestamps: true, collection: 'users' }
