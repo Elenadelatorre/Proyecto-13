@@ -1,8 +1,14 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, Button } from '@chakra-ui/react';
 import NavLink from '../Header/NavLink';
 import ChangeTheme from '../ChangeTheme/ChangeTheme';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Header = () => {
+  const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <Box
       as='header'
@@ -31,13 +37,29 @@ const Header = () => {
           listStyleType='none'
           flex='1'
         >
-          <NavLink href="/">Inicio</NavLink>
-          <NavLink href="/motos">Motos</NavLink>
-          <NavLink href="/reviews">Reseñas</NavLink>
-          <NavLink href="/suscripcion">Suscripción</NavLink>
-          <NavLink href="/login">Login</NavLink>
+          <NavLink href='/'>Inicio</NavLink>
+          <NavLink href='/motos'>Alquiler de Motos</NavLink>
+          <NavLink href='/reviews'>Reseñas</NavLink>
+          <NavLink href='/suscripcion'>Ofertas Exclusivas</NavLink>
+          <NavLink href='/AddMoto'>Añadir moto</NavLink>
         </Flex>
         <ChangeTheme />
+        {isAuthenticated ? (
+          <Button colorScheme='red' onClick={logout} ml={10}>
+            Cerrar Sesión
+          </Button>
+        ) : (
+          location.pathname !== '/login' && (
+            <Button
+              colorScheme='yellow'
+              color='var(--rtc-color-4)'
+              onClick={() => navigate('/login')}
+              ml={10}
+            >
+              Iniciar Sesión
+            </Button>
+          )
+        )}
       </Flex>
     </Box>
   );

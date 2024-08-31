@@ -13,6 +13,7 @@ import { useContext } from 'react';
 import { ThemeContext } from './Providers/ThemeProvider';
 import MotoDetails from './pages/MotoDetails/MotoDetails';
 import Register from './pages/Register/Register';
+import AddMoto from './pages/AddMoto/AddMoto';
 
 function App() {
   const { light } = useContext(ThemeContext);
@@ -33,6 +34,7 @@ function App() {
         <Route path='/motos/:id' element={<MotoDetails />}></Route>
         <Route path='/reviews' element={<Reviews />}></Route>
         <Route path='/suscripcion' element={<Suscripcion />}></Route>
+        <Route path='/addMoto' element={<AddMoto />}></Route>
         <Route path='*' element={<NotFound />}></Route>
       </Routes>
       <Footer />

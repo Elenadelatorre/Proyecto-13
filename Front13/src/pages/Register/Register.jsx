@@ -1,4 +1,3 @@
-// src/pages/Register/Register.jsx
 import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Input, Stack, Text, useToast, Link } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +14,7 @@ const Register = () => {
   const handleRegister = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/users/register', {
+      const response = await fetch('http://localhost:3000/api/v1/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -25,20 +24,37 @@ const Register = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData || 'Error al registrar el usuario');
+        throw new Error(errorData.message || 'Error al registrar el usuario');
       }
 
-      const { message } = await response.json();
+      // Registro exitoso, ahora iniciar sesión automáticamente
+      const loginResponse = await fetch('http://localhost:3000/api/v1/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, contraseña: password })
+      });
+
+      if (!loginResponse.ok) {
+        throw new Error('Registro exitoso, pero error al iniciar sesión automáticamente.');
+      }
+
+      const { token, user } = await loginResponse.json();
+
+      // Almacena el token y la información del usuario
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
 
       toast({
-        title: 'Registro exitoso.',
-        description: message,
+        title: 'Registro e inicio de sesión exitosos.',
+        description: 'Te has registrado e iniciado sesión correctamente.',
         status: 'success',
         duration: 4000,
         isClosable: true
       });
 
-      navigate('/login'); // Redirige a la página de inicio de sesión después del registro
+      navigate('/'); // Redirige a la página principal después de iniciar sesión
     } catch (error) {
       setError(error.message);
       toast({
@@ -124,4 +140,3 @@ const Register = () => {
 };
 
 export default Register;
-

@@ -11,9 +11,9 @@ const ChangeTheme = () => {
       className='theme-icon'
       src={light ? '/assets/moto.amarilla.png' : '/assets/motocicleta.png'}
       alt='cambiar de tema'
-      w='90px'
+      w='65px'
       position='absolute'
-      top='11px'
+      top='35px'
       right='20px'
       transition='all 0.5s '
       cursor='pointer'

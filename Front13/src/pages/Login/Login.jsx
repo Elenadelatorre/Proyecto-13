@@ -1,7 +1,18 @@
 // src/pages/Login/Login.jsx
 import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Input, Stack, Text, useToast, Link } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Stack,
+  Text,
+  useToast,
+  Link
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,11 +21,12 @@ const Login = () => {
   const [error, setError] = useState('');
   const toast = useToast();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/users/login', {
+      const response = await fetch('http://localhost:3000/api/v1/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -29,9 +41,7 @@ const Login = () => {
 
       const { token, user } = await response.json();
 
-      // Almacena el token y la información del usuario según sea necesario (por ejemplo, en el localStorage)
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      login(token);
 
       toast({
         title: 'Inicio de sesión exitoso.',
@@ -41,7 +51,7 @@ const Login = () => {
         isClosable: true
       });
 
-      navigate('/'); 
+      navigate('/');
     } catch (error) {
       setError(error.message);
       toast({
@@ -72,7 +82,13 @@ const Login = () => {
         w='full'
         bg='white'
       >
-        <Text fontSize='2xl' mb='4' textAlign='center' fontWeight='bold' color='var(--rtc-color-4)'>
+        <Text
+          fontSize='2xl'
+          mb='4'
+          textAlign='center'
+          fontWeight='bold'
+          color='var(--rtc-color-4)'
+        >
           Iniciar Sesión
         </Text>
         <Stack spacing='4'>
@@ -98,13 +114,19 @@ const Login = () => {
           </FormControl>
           {error && <Text color='red.500'>{error}</Text>}
           <Button
-            colorScheme='yellow' bg='var(--rtc-color-2)'
+            colorScheme='yellow'
+            bg='var(--rtc-color-2)'
             isLoading={loading}
             onClick={handleLogin}
           >
             Iniciar Sesión
           </Button>
-          <Text fontSize='sm' mt='4' textAlign='center' color='var(--rtc-color-4)'>
+          <Text
+            fontSize='sm'
+            mt='4'
+            textAlign='center'
+            color='var(--rtc-color-4)'
+          >
             ¿No tienes una cuenta?{' '}
             <Link color='blue.500' onClick={() => navigate('/register')}>
               Regístrate aquí

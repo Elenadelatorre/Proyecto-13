@@ -1,6 +1,7 @@
 const {
   getMotos,
   getMotoById,
+  getMotosBrands,
   postMoto,
   deleteMoto,
   updateMoto
@@ -8,6 +9,7 @@ const {
 const motosRouter = require('express').Router();
 
 motosRouter.get('/:id', getMotoById);
+motosRouter.get('/brands', getMotosBrands);
 motosRouter.get('/', getMotos);
 motosRouter.post('/', postMoto);
 motosRouter.put('/:id', updateMoto);
