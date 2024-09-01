@@ -39,9 +39,13 @@ const Header = () => {
         >
           <NavLink href='/'>Inicio</NavLink>
           <NavLink href='/motos'>Alquiler de Motos</NavLink>
-          <NavLink href='/reviews'>Reseñas</NavLink>
+          {isAuthenticated && (
+            <>
+              <NavLink href='/reviews'>Mis reseñas</NavLink>
+              <NavLink href='/AddMoto'>Añadir moto</NavLink>
+            </>
+          )}
           <NavLink href='/suscripcion'>Ofertas Exclusivas</NavLink>
-          <NavLink href='/AddMoto'>Añadir moto</NavLink>
         </Flex>
         <ChangeTheme />
         {isAuthenticated ? (

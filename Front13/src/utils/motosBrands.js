@@ -1,5 +1,6 @@
 // Definir las marcas de móviles
 export const motosBrands = [
+  'Todas',
   'Aprilia',
   'BMW',
   'Ducati',
@@ -11,5 +12,6 @@ export const motosBrands = [
   'Suzuki',
   'Triumph',
   'Yamaha',
-  'Zontes'
+  'Zontes',
+  'Otras'
 ];
