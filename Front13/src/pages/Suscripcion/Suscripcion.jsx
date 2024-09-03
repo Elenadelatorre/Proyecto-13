@@ -1,233 +1,148 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
+  Checkbox,
   FormControl,
   FormLabel,
   Input,
   Select,
-  Textarea,
-  useToast,
+  Text,
   VStack,
-  Flex,
-  Text
+  useToast,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import SuccessMessage from '../../components/Suscripcion/CorrectForm/CorrectForm';
+import Instrucciones from '../../components/Suscripcion/Instrucciones/Instrucciones';
+import MotosBrandSelect from '../../components/Suscripcion/MotosBrandSelect/MotosBrandSelect';
 
-const AddMotoForm = () => {
+const Formulario = () => {
+  const [submitted, setSubmitted] = useState(false);
+  const toast = useToast();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
-  } = useForm({
-    defaultValues: {
-      VIN: '',
-      marca: '',
-      modelo: '',
-      tipo: '', 
-      año: '',
-      km: '',
-      precio: '',
-      estado: 'Disponible',
-      imagen: '',
-      descripcion: '',
-      propietario: '' 
-    }
-  });
+  } = useForm();
 
-  const toast = useToast();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    if (user) {
-      try {
-        const userObject = JSON.parse(user);
-        if (userObject && userObject._id) {
-          reset((prev) => ({
-            ...prev,
-            propietario: userObject._id || '' 
-          }));
-        }
-      } catch (error) {
-        console.error('Error al parsear el objeto del usuario:', error);
-      }
-    }
-  }, [reset]);
-
-  const onSubmit = async (data) => {
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/motos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) throw new Error('Error al crear la moto');
-
-      const result = await response.json();
-      toast({
-        title: 'Moto agregada',
-        description: `La moto ${result.marca} ${result.modelo} ha sido añadida exitosamente.`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true
-      });
-
-      reset({
-        VIN: '',
-        marca: '',
-        modelo: '',
-        tipo: '', 
-        año: '',
-        km: '',
-        precio: '',
-        estado: 'Disponible',
-        imagen: '',
-        descripcion: '',
-        propietario: '' 
-      });
-
-      navigate('/motos');
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      });
-    }
+  const onSubmit = (data) => {
+    console.log(data);
+    setSubmitted(true);
+    toast({
+      title: 'Suscripción exitosa',
+      description: 'Te has suscrito a nuestras ofertas y promociones exitosamente.',
+      status: 'success',
+      duration: 5000,
+      isClosable: true,
+    });
   };
 
+  if (submitted) {
+    return <SuccessMessage />;
+  }
+
   return (
-    <Box p='4' maxW='800px' mx='auto'>
-      <Box as='form' onSubmit={handleSubmit(onSubmit)}>
-        <VStack spacing='4' align='stretch' mb='4'>
-          <FormControl isInvalid={!!errors.VIN}>
-            <FormLabel>VIN</FormLabel>
+    <Box p="4" maxW="600px" mx="auto">
+      <Text fontSize="2xl" fontWeight="bold" mb="4">
+        Suscripción a Ofertas y Promociones
+      </Text>
+      <Instrucciones />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <VStack spacing="4" align="stretch">
+          <FormControl isInvalid={!!errors.name} isRequired>
+            <FormLabel>Nombre Completo</FormLabel>
             <Input
-              placeholder='Ingrese el VIN'
-              {...register('VIN', { required: 'El VIN es obligatorio' })}
+              type="text"
+              placeholder="Nombre y apellidos"
+              {...register('name', { required: 'Este campo es obligatorio' })}
             />
-            {errors.VIN && <Text color='red.500'>{errors.VIN.message}</Text>}
+            {errors.name && <Text color="red.500">{errors.name.message}</Text>}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.marca}>
-            <FormLabel>Marca</FormLabel>
+          <FormControl isInvalid={!!errors.email} isRequired>
+            <FormLabel>Correo Electrónico</FormLabel>
             <Input
-              placeholder='Ingrese la marca'
-              {...register('marca', { required: 'La marca es obligatoria' })}
+              type="email"
+              placeholder="correo@ejemplo.com"
+              {...register('email', {
+                required: 'Este campo es obligatorio',
+                pattern: {
+                  value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
+                  message: 'Correo electrónico no válido',
+                },
+              })}
             />
-            {errors.marca && <Text color='red.500'>{errors.marca.message}</Text>}
+            {errors.email && <Text color="red.500">{errors.email.message}</Text>}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.modelo}>
-            <FormLabel>Modelo</FormLabel>
+          <FormControl isInvalid={!!errors.phone}>
+            <FormLabel>Número de Teléfono</FormLabel>
             <Input
-              placeholder='Ingrese el modelo'
-              {...register('modelo', { required: 'El modelo es obligatorio' })}
+              type="tel"
+              placeholder="1234567890"
+              {...register('phone', {
+                required: 'Este campo es obligatorio',
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: 'Número de teléfono no válido',
+                },
+              })}
             />
-            {errors.modelo && <Text color='red.500'>{errors.modelo.message}</Text>}
+            {errors.phone && <Text color="red.500">{errors.phone.message}</Text>}
           </FormControl>
+
+          <FormControl isInvalid={!!errors.age} isRequired>
+            <FormLabel>Fecha de Nacimiento</FormLabel>
+            <Input
+              type="date"
+              {...register('age', { required: 'Este campo es obligatorio' })}
+            />
+            {errors.age && <Text color="red.500">{errors.age.message}</Text>}
+          </FormControl>
+
+          <MotosBrandSelect {...register('brand')} />
+
+          <FormControl isInvalid={!!errors.preference} isRequired>
+            <FormLabel>Preferencias de Ofertas</FormLabel>
+            <Input
+              type="text"
+              placeholder="Tipo de ofertas que te interesan"
+              {...register('preference')}
+            />
+            {errors.preference && (
+              <Text color="red.500">{errors.preference.message}</Text>
+            )}
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.frequency}>
+            <FormLabel>Frecuencia de Notificaciones</FormLabel>
+            <Select
+              placeholder="Selecciona la frecuencia"
+              {...register('frequency', { required: 'Este campo es obligatorio' })}
+            >
+              <option value="daily">Diaria</option>
+              <option value="weekly">Semanal</option>
+              <option value="monthly">Mensual</option>
+            </Select>
+            {errors.frequency && (
+              <Text color="red.500">{errors.frequency.message}</Text>
+            )}
+          </FormControl>
+
+          <FormControl isInvalid={!!errors.terms} isRequired>
+            <Checkbox {...register('terms', { required: 'Debe aceptar los términos' })}>
+              Acepto los términos y condiciones
+            </Checkbox>
+            {errors.terms && <Text color="red.500">{errors.terms.message}</Text>}
+          </FormControl>
+
+          <Button type="submit" colorScheme="yellow" bg="var(--rtc-color-2)">
+            Suscribirse
+          </Button>
         </VStack>
-
-        <Flex
-          direction={{ base: 'column', md: 'row' }}
-          mb='4'
-          wrap='wrap'
-          gap='4'
-        >
-          <FormControl flex='1'>
-            <FormLabel>Tipo</FormLabel>
-            <Select {...register('tipo')}>
-              <option value='Cruiser'>Cruiser</option>
-              <option value='Custom'>Custom</option>
-              <option value='Deportiva'>Deportiva</option>
-              <option value='Eléctrica'>Eléctrica</option>
-              <option value='Motocross'>Motocross</option>
-              <option value='Naked'>Naked</option>
-              <option value='Retro'>Retro</option>
-              <option value='Scooter'>Scooter</option>
-              <option value='Trail'>Trail</option>
-              <option value='Turismo'>Turismo</option>
-            </Select>
-          </FormControl>
-
-          <FormControl isInvalid={!!errors.año} flex='1'>
-            <FormLabel>Año</FormLabel>
-            <Input
-              type='number'
-              placeholder='Ingrese el año'
-              {...register('año', { required: 'El año es obligatorio' })}
-            />
-            {errors.año && <Text color='red.500'>{errors.año.message}</Text>}
-          </FormControl>
-
-          <FormControl isInvalid={!!errors.km} flex='1'>
-            <FormLabel>Kilómetros</FormLabel>
-            <Input
-              type='number'
-              placeholder='Ingrese los kilómetros'
-              {...register('km', { required: 'Los kilómetros son obligatorios' })}
-            />
-            {errors.km && <Text color='red.500'>{errors.km.message}</Text>}
-          </FormControl>
-
-          <FormControl isInvalid={!!errors.precio} flex='2'>
-            <FormLabel>Precio al día (€)</FormLabel>
-            <Input
-              type='number'
-              placeholder='Ingrese el precio'
-              {...register('precio', { required: 'El precio es obligatorio' })}
-            />
-            {errors.precio && <Text color='red.500'>{errors.precio.message}</Text>}
-          </FormControl>
-
-          <FormControl flex='1'>
-            <FormLabel>Estado</FormLabel>
-            <Select {...register('estado')}>
-              <option value='Disponible'>Disponible</option>
-            </Select>
-          </FormControl>
-
-          <FormControl flex='2'>
-            <FormLabel>Imagen URL</FormLabel>
-            <Input
-              placeholder='Ingrese la URL de la imagen'
-              {...register('imagen')}
-            />
-          </FormControl>
-        </Flex>
-
-        <FormControl isInvalid={!!errors.descripcion} mb='4'>
-          <FormLabel>Descripción</FormLabel>
-          <Textarea
-            placeholder='Ingrese una descripción'
-            {...register('descripcion', { required: 'La descripción es obligatoria' })}
-          />
-          {errors.descripcion && <Text color='red.500'>{errors.descripcion.message}</Text>}
-        </FormControl>
-
-        <FormControl mb='4'>
-          <FormLabel>Propietario ID</FormLabel>
-          <Input
-            value={formData.propietario || ''} // Mantenlo solo lectura
-            readOnly
-            {...register('propietario')}
-          />
-        </FormControl>
-
-        <Button type='submit' colorScheme='blue'>
-          Agregar Moto
-        </Button>
-      </Box>
+      </form>
     </Box>
   );
 };
 
-export default AddMotoForm;
+export default Formulario;

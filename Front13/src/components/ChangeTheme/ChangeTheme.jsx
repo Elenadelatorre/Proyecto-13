@@ -12,14 +12,10 @@ const ChangeTheme = () => {
       src={light ? '/assets/moto.amarilla.png' : '/assets/motocicleta.png'}
       alt='cambiar de tema'
       w='65px'
-      position='absolute'
-      top='35px'
-      right='20px'
-      transition='all 0.5s '
+      transition='all 0.5s'
       cursor='pointer'
       _hover={{ transform: 'scale(1.1)' }}
       onClick={() => setLight(!light)}
-      
     />
   );
 };

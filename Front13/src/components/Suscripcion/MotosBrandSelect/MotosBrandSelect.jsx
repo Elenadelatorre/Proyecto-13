@@ -8,7 +8,7 @@ const MotosBrandSelect = React.forwardRef(({ error }, ref) => (
     <FormLabel htmlFor='moto-brand'>¿Qué marca de motos te interesa más?</FormLabel>
     <Select
       id='moto-brand'
-      ref={ref} // Usar ref aquí
+      ref={ref} 
       placeholder='Selecciona una marca'
       borderColor={error ? 'red.500' : 'inherit'}
       focusBorderColor={error ? 'red.500' : 'blue.500'}

@@ -18,12 +18,14 @@
   --rtc-color-5: #9B27B0; 
 
   --rtc-light-mode-bg: var(--rtc-color-0);
-  --rtc-dark-mode-bg: var(--rtc-color-1);
+  --rtc-dark-mode-bg: var(--rtc-color-4);
+
   --rtc-light-mode-bg-negative: var(--rtc-color-1);
   --rtc-dark-mode-bg-negative: var(--rtc-color-0);
 
   --rtc-light-mode-text: var(--rtc-color-4);
   --rtc-dark-mode-text: var(--rtc-color-0);
+  
   --rtc-light-mode-text-negative: var(--rtc-color-0);
   --rtc-dark-mode-text-negative: var(--rtc-color-4);
 }

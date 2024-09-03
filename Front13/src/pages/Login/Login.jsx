@@ -41,6 +41,11 @@ const Login = () => {
 
       const { token, user } = await response.json();
 
+      // Guarda el token y el usuario en localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // Llama a la función de login del contexto
       login(token);
 
       toast({
