@@ -3,10 +3,12 @@ const {
   getReviewById,
   postReview,
   deleteReview,
-  updateReview
+  updateReview,
+  getReviewsByPropietario
 } = require('../controllers/reviews');
 const reviewsRouter = require('express').Router();
 
+reviewsRouter.get('/:propietarioId/reviews', getReviewsByPropietario);
 reviewsRouter.get('/:id', getReviewById);
 reviewsRouter.get('/', getReviews);
 reviewsRouter.post('/', postReview);

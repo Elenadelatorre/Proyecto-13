@@ -47,10 +47,10 @@ const AddMotoForm = () => {
     if (user) {
       try {
         const userObject = JSON.parse(user);
-        console.log("Usuario cargado desde localStorage:", userObject); // Verifica el objeto del usuario
+        console.log('Usuario cargado desde localStorage:', userObject); // Verifica el objeto del usuario
 
         if (userObject && userObject._id) {
-          console.log("ID de usuario:", userObject._id); // Verifica el ID del usuario
+          console.log('ID de usuario:', userObject._id); // Verifica el ID del usuario
           // Establecer el ID del propietario en el formulario
           setValue('propietario', userObject._id);
         }
@@ -242,11 +242,7 @@ const AddMotoForm = () => {
           {/* Campo de Propietario ID de solo lectura */}
           <FormControl>
             <FormLabel>Propietario ID</FormLabel>
-            <Input
-              type='text'
-              readOnly
-              {...register('propietario')}
-            />
+            <Input type='text' readOnly {...register('propietario')} />
           </FormControl>
 
           <Flex justify='center' mt='4'>

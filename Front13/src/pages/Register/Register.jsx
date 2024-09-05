@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Input, Stack, Text, useToast, Link } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Stack,
+  Text,
+  useToast,
+  Link
+} from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
@@ -14,13 +24,16 @@ const Register = () => {
   const handleRegister = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/v1/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nombre: name, email, contraseña: password })
-      });
+      const response = await fetch(
+        'http://localhost:3000/api/v1/users/register',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nombre: name, email, contraseña: password })
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -28,16 +41,21 @@ const Register = () => {
       }
 
       // Registro exitoso, ahora iniciar sesión automáticamente
-      const loginResponse = await fetch('http://localhost:3000/api/v1/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, contraseña: password })
-      });
+      const loginResponse = await fetch(
+        'http://localhost:3000/api/v1/users/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, contraseña: password })
+        }
+      );
 
       if (!loginResponse.ok) {
-        throw new Error('Registro exitoso, pero error al iniciar sesión automáticamente.');
+        throw new Error(
+          'Registro exitoso, pero error al iniciar sesión automáticamente.'
+        );
       }
 
       const { token, user } = await loginResponse.json();
@@ -85,7 +103,13 @@ const Register = () => {
         w='full'
         bg='white'
       >
-        <Text fontSize='2xl' mb='4' textAlign='center' fontWeight='bold' color='var(--rtc-color-4)'>
+        <Text
+          fontSize='2xl'
+          mb='4'
+          textAlign='center'
+          fontWeight='bold'
+          color='var(--rtc-color-4)'
+        >
           Registro
         </Text>
         <Stack spacing='4'>
@@ -121,13 +145,19 @@ const Register = () => {
           </FormControl>
           {error && <Text color='red.500'>{error}</Text>}
           <Button
-            colorScheme='yellow' bg='var(--rtc-color-2)'
+            colorScheme='yellow'
+            bg='var(--rtc-color-2)'
             isLoading={loading}
             onClick={handleRegister}
           >
             Registrarse
           </Button>
-          <Text fontSize='sm' mt='4' textAlign='center' color='var(--rtc-color-4)'>
+          <Text
+            fontSize='sm'
+            mt='4'
+            textAlign='center'
+            color='var(--rtc-color-4)'
+          >
             ¿Ya tienes una cuenta?{' '}
             <Link color='blue.500' onClick={() => navigate('/login')}>
               Inicia sesión aquí

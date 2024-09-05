@@ -114,14 +114,14 @@ const Header = () => {
               {isAuthenticated && (
                 <>
                   <NavLink
-                    href='/reviews'
+                    href='/myMotos'
                     ml={{ base: 0, md: linkSpacing }}
                     p={2}
                     borderRadius='md'
                     bg='gray.100'
                     color='gray.800'
                   >
-                    Mis reseñas
+                    Mis reservas y reseñas
                   </NavLink>
                   <NavLink
                     href='/AddMoto'
@@ -233,8 +233,8 @@ const Header = () => {
               </NavLink>
               {isAuthenticated && (
                 <>
-                  <NavLink href='/reviews' onClick={onClose} inDrawer={true}>
-                    Mis reseñas
+                  <NavLink href='/myMotos' onClick={onClose} inDrawer={true}>
+                    Mis reservas y reseñas
                   </NavLink>
                   <NavLink href='/AddMoto' onClick={onClose} inDrawer={true}>
                     Añadir moto

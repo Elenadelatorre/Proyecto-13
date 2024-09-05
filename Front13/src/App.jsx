@@ -5,7 +5,6 @@ import Footer from './components/Footer/Footer';
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 import Motos from './pages/Motos/Motos';
-import Reviews from './pages/Reviews/Reviews';
 import Suscripcion from './pages/Suscripcion/Suscripcion';
 import NotFound from './pages/NotFound/NotFound';
 import { Box } from '@chakra-ui/react';
@@ -14,6 +13,8 @@ import { ThemeContext } from './Providers/ThemeProvider';
 import MotoDetails from './pages/MotoDetails/MotoDetails';
 import Register from './pages/Register/Register';
 import AddMoto from './pages/AddMoto/AddMoto';
+import MyMotosPage from './pages/MyMotos/MyMotos';
+import MyMotos from './pages/MyMotos/MyMotos';
 
 function App() {
   const { light } = useContext(ThemeContext);
@@ -32,9 +33,9 @@ function App() {
         <Route path='/register' element={<Register />}></Route>
         <Route path='/motos' element={<Motos />}></Route>
         <Route path='/motos/:id' element={<MotoDetails />}></Route>
-        <Route path='/reviews' element={<Reviews />}></Route>
         <Route path='/suscripcion' element={<Suscripcion />}></Route>
         <Route path='/addMoto' element={<AddMoto />}></Route>
+        <Route path='/myMotos' element={<MyMotos />}></Route>
         <Route path='*' element={<NotFound />}></Route>
       </Routes>
       <Footer />

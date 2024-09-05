@@ -26,6 +26,36 @@ const getReviewById = async (req, res, next) => {
   }
 };
 
+// Obtener reseñas de las motos de un propietario:
+const getReviewsByPropietario = async (req, res, next) => {
+  try {
+    const { propietarioId } = req.params;
+
+    const motos = await Moto.find({ propietario: propietarioId }).populate({
+      path: 'reviews',
+      populate: {
+        path: 'user',
+        select: 'nombre email'
+      }
+    });
+
+    // Si no se encuentran motos
+    if (!motos || motos.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'No se encontraron motos para este propietario.' });
+    }
+
+    const reseñas = motos.flatMap((moto) => moto.reviews);
+
+    return res.status(200).json(reseñas);
+  } catch (error) {
+    return res
+      .status(400)
+      .json({ message: 'Error en la solicitud: ' + error.message });
+  }
+};
+
 // POST review
 const postReview = async (req, res, next) => {
   try {
@@ -81,6 +111,7 @@ const deleteReview = async (req, res, next) => {
 module.exports = {
   getReviews,
   getReviewById,
+  getReviewsByPropietario,
   postReview,
   updateReview,
   deleteReview
