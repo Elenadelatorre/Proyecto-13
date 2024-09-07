@@ -11,6 +11,7 @@ import {
   Link
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -18,6 +19,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { login } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -64,6 +66,8 @@ const Register = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
+      login({ token, user });
+
       toast({
         title: 'Registro e inicio de sesión exitosos.',
         description: 'Te has registrado e iniciado sesión correctamente.',
@@ -72,7 +76,8 @@ const Register = () => {
         isClosable: true
       });
 
-      navigate('/'); // Redirige a la página principal después de iniciar sesión
+      navigate('/');
+      return;
     } catch (error) {
       setError(error.message);
       toast({

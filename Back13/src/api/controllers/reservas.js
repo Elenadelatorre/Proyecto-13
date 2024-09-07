@@ -58,35 +58,38 @@ const getReservasByPropietario = async (req, res, next) => {
 };
 
 // Crear una nueva reserva
-const postReserva = async (req, res, next) => {
+const postReserva = async (req, res) => {
   try {
-    const { moto, cliente, fechaInicio, fechaFin, precioTotal, comentarios } =
+    const { moto, usuario, fechaInicio, fechaFin, precioTotal, comentarios } =
       req.body;
 
-   
+    // Buscar la moto
     const motoExistente = await Moto.findById(moto);
-    if (!motoExistente) {
+    if (!motoExistente)
       return res.status(404).json({ message: 'Moto no encontrada' });
-    }
 
-    const clienteExistente = await User.findById(cliente);
-    if (!clienteExistente) {
-      return res.status(404).json({ message: 'Cliente no encontrado' });
-    }
+    // Buscar el usuario
+    const usuarioExistente = await User.findById(usuario); // Usa directamente el ID del usuario
+    if (!usuarioExistente)
+      return res.status(404).json({ message: 'Usuario no encontrado' });
 
+    // Crear la reserva
     const nuevaReserva = new Reserva({
       moto,
-      cliente,
+      usuario: usuarioExistente._id, // Usamos el ID del usuario
       fechaInicio,
       fechaFin,
       precioTotal,
       comentarios
     });
 
+    // Guardar la reserva
     const reservaGuardada = await nuevaReserva.save();
     res.status(201).json(reservaGuardada);
   } catch (error) {
-    return res.status(400).json('Error en la solicitud: ' + error.message);
+    res
+      .status(400)
+      .json({ message: 'Error en la solicitud: ' + error.message });
   }
 };
 

@@ -24,12 +24,7 @@ const reservaSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    estado: {
-      type: String,
-      enum: ['Pendiente', 'Confirmada', 'Cancelada', 'Completada'],
-      default: 'Pendiente',
-      required: true,
-    },
+    
     // Opcional: Campo para comentarios adicionales
     comentarios: {
       type: String,

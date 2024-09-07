@@ -43,7 +43,7 @@ const Login = () => {
 
       // Guarda el token y el usuario en localStorage
       localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', user._id);
 
       // Llama a la función de login del contexto
       login(token);

@@ -1,7 +1,6 @@
 const {
   getReservas,
   getReservaById,
-  getReservasBrands,
   postReserva,
   deleteReserva,
   updateReserva,
