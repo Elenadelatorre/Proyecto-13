@@ -63,16 +63,18 @@ const getMotosBrands = async (req, res, next) => {
 
 
 
-//PUT reviews:
+//PUT moto:
 const updateMoto = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const oldMoto = await Moto.findById(id);
+    const oldMoto = await Moto.findById(id).populate('propietario', 'nombre email');
     if (!oldMoto) {
       return res.status(404).json({ message: 'Moto no encontrada' });
     }
-    Object.assign(oldMoto, req.body);
+    if (req.body.estado) {
+      oldMoto.estado = req.body.estado;
+    }
     await oldMoto.save();
 
     return res.status(200).json(oldMoto);

@@ -1,8 +1,24 @@
-// src/components/MotoDetails/ContactModal.jsx
 import React from 'react';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Text, Input, Button, HStack } from '@chakra-ui/react';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  Text,
+  Input,
+  Button,
+  HStack
+} from '@chakra-ui/react';
 
-const ContactModal = ({ isOpen, onClose, contactMessage, setContactMessage, handleSendMessage }) => {
+const ContactModal = ({
+  isOpen,
+  onClose,
+  contactMessage,
+  setContactMessage,
+  handleSendMessage
+}) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -18,7 +34,11 @@ const ContactModal = ({ isOpen, onClose, contactMessage, setContactMessage, hand
             mb='4'
           />
           <HStack spacing='4' justify='flex-end'>
-            <Button colorScheme='yellow' bg='var(--rtc-color-2)' onClick={handleSendMessage}>
+            <Button
+              colorScheme='yellow'
+              bg='var(--rtc-color-2)'
+              onClick={handleSendMessage}
+            >
               Enviar
             </Button>
             <Button variant='outline' onClick={onClose}>

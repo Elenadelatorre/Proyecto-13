@@ -1,29 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Text,
-  Image,
-  VStack,
-  Divider,
-  Button,
-  useToast,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  FormControl,
-  FormLabel,
-  Input,
-  Textarea
-} from '@chakra-ui/react';
+import { Box, Text, useToast } from '@chakra-ui/react';
 import { useMotos } from '../../context/MotoContext';
 import { useAuth } from '../../context/AuthContext';
 import MotoStatus from '../../components/MotoDetails/MotoStatus';
-import StarRating from '../../components/MotoDetails/StarRating';
+import MotoInfo from '../../components/MotoDetails/MotoInfo';
+import ReserveModal from '../../components/MotoDetails/ReserveModal';
 import ContactModal from '../../components/MotoDetails/ContactModal';
 import Loading from '../../components/Loading/Loading';
 import { actionTypes } from '../../context/motoReducer';
@@ -42,11 +24,38 @@ const MotoDetails = () => {
   const [isReserveModalOpen, setIsReserveModalOpen] = useState(false); // Estado para el modal de reserva
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
+  const [precioTotal, setPrecioTotal] = useState(0);
   const [comentarios, setComentarios] = useState('');
+
+  // Función para calcular el precio total basado en las fechas seleccionadas
+  const calcularPrecioTotal = () => {
+    if (!fechaInicio || !fechaFin) return 0;
+
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+
+    // Calcula la diferencia en días
+    const diferenciaEnDias = (fin - inicio) / (1000 * 60 * 60 * 24);
+
+    // Asegúrate de que al menos haya un día seleccionado
+    const diasDeReserva = Math.max(diferenciaEnDias, 1);
+
+    // Calcula el precio total multiplicando por el precio por día
+    const total = diasDeReserva * moto.precio;
+    setPrecioTotal(total);
+  };
+  const closeContactModal = () => {
+    setIsContactModalOpen(false);
+  };
+
+  // Recalcula el precio total cuando cambian las fechas de inicio o fin
+  useEffect(() => {
+    calcularPrecioTotal();
+  }, [fechaInicio, fechaFin]); // Recalcula cada vez que las fechas cambien
 
   // Efecto para inicializar el estado basado en localStorage
   useEffect(() => {
-    const storedMotoState = localStorage.getItem('moto_reservations');
+    const storedMotoState = localStorage.getItem('moto_reservations') || '[]';
     if (storedMotoState) {
       const reservations = JSON.parse(storedMotoState);
       const motoReservation = reservations.find(
@@ -75,17 +84,34 @@ const MotoDetails = () => {
   }, [moto, id]);
 
   useEffect(() => {
-    if (!moto) {
-      fetch(`http://localhost:3000/api/v1/motos/${id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          dispatch({ type: actionTypes.UPDATE_MOTO, payload: data });
-        })
-        .catch((error) => {
-          console.error('Error fetching moto:', error);
+    const fetchMotoData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/v1/motos/${id}`
+        );
+        const data = await response.json();
+        dispatch({ type: actionTypes.UPDATE_MOTO, payload: data });
+
+        // Verificar si la moto está reservada en la base de datos
+        if (data.estado === 'No disponible') {
+          setIsReserved(true);
+        } else {
+          setIsReserved(false);
+        }
+      } catch (error) {
+        console.error('Error fetching moto:', error);
+        toast({
+          title: 'Error',
+          description: 'Hubo un problema al cargar los detalles de la moto.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
         });
-    }
-  }, [id, moto, dispatch]);
+      }
+    };
+
+    fetchMotoData();
+  }, [id, dispatch]);
 
   const handleSendMessage = () => {
     toast({
@@ -106,8 +132,8 @@ const MotoDetails = () => {
     }
     if (!isReserved) {
       try {
-        const userId = localStorage.getItem('userId'); // Obtén el ID del usuario desde localStorage
-        console.log('ID de usuario:', userId);
+        const userId = localStorage.getItem('user'); // Obtén el ID del usuario desde localStorage
+
         const response = await fetch(`http://localhost:3000/api/v1/reservas`, {
           method: 'POST',
           headers: {
@@ -117,17 +143,18 @@ const MotoDetails = () => {
           body: JSON.stringify({
             moto: id,
             usuario: userId, // Envío del ID del usuario como una cadena
-            fechaInicio , // Puedes ajustar estas fechas según el input del usuario
+            fechaInicio, // Puedes ajustar estas fechas según el input del usuario
             fechaFin,
             precioTotal: moto.precio * 2,
-            comentarios: 'Reserva para el fin de semana.'
+            comentarios
           })
         });
-  
+
         if (response.ok) {
           const data = await response.json();
           console.log('Reserva creada:', data);
-  
+          console.log('Moto antes de actualizar:', moto);
+
           // Actualizar el estado de la moto a 'No disponible'
           const responseMoto = await fetch(
             `http://localhost:3000/api/v1/motos/${id}`,
@@ -137,16 +164,18 @@ const MotoDetails = () => {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${localStorage.getItem('token')}`
               },
-              body: JSON.stringify({ ...moto, estado: 'No disponible' })
+              body: JSON.stringify({ estado: 'No disponible' })
             }
           );
-  
+
           if (responseMoto.ok) {
             dispatch({
               type: actionTypes.RESERVE_MOTO,
               payload: { ...moto, estado: 'No disponible' }
             });
-  
+
+            setIsReserved(true);
+
             toast({
               title: 'Reserva Confirmada',
               description: 'Has reservado la moto exitosamente.',
@@ -154,7 +183,7 @@ const MotoDetails = () => {
               duration: 5000,
               isClosable: true
             });
-  
+
             setIsReserveModalOpen(false); // Cerrar el modal después de la reserva
           } else {
             const errorData = await responseMoto.json();
@@ -188,8 +217,6 @@ const MotoDetails = () => {
       }
     }
   };
-  
-  
 
   const handleCancelReservation = async () => {
     if (isReserved) {
@@ -210,21 +237,19 @@ const MotoDetails = () => {
             type: actionTypes.RESERVE_MOTO,
             payload: { ...moto, estado: 'Disponible' }
           });
+          setIsReserved(false);
 
           // Eliminar del localStorage
           const storedMotoState = localStorage.getItem('moto_reservations');
-          if (storedMotoState) {
-            let reservations = JSON.parse(storedMotoState);
-            reservations = reservations.filter(
-              (reservation) => reservation.id !== id
-            );
-            localStorage.setItem(
-              'moto_reservations',
-              JSON.stringify(reservations)
-            );
-          }
+          let reservations = JSON.parse(storedMotoState);
+          reservations = reservations.filter(
+            (reservation) => reservation.id !== id
+          );
+          localStorage.setItem(
+            'moto_reservations',
+            JSON.stringify(reservations)
+          );
 
-          setIsReserved(false);
           toast({
             title: 'Reserva Cancelada',
             description: 'Has cancelado la reserva de la moto.',
@@ -246,12 +271,6 @@ const MotoDetails = () => {
       }
     }
   };
-
-  const openContactModal = () => setIsContactModalOpen(true);
-  const closeContactModal = () => setIsContactModalOpen(false);
-
-  const openReserveModal = () => setIsReserveModalOpen(true);
-  const closeReserveModal = () => setIsReserveModalOpen(false);
 
   if (loading)
     return (
@@ -278,154 +297,32 @@ const MotoDetails = () => {
         position='relative'
       >
         <MotoStatus estado={isReserved ? 'No disponible' : 'Disponible'} />
-
-        <VStack spacing='4' align='stretch'>
-          <Text fontSize='3xl' fontWeight='bold' color='var(--rtc-color-4)'>
-            {moto.marca}
-          </Text>
-          <Text fontSize='xl' fontWeight='bold' color='var(--rtc-color-4)'>
-            {moto.modelo} ({moto.año})
-          </Text>
-
-          <Image
-            src={moto.imagen || '/default-image.png'}
-            alt={`${moto.marca} ${moto.modelo}`}
-            boxSize={{ base: '300px', md: '500px' }}
-            objectFit='contain'
-            maxWidth='100%'
-            maxHeight='100%'
-            m='auto'
-          />
-
-          <Text
-            fontSize='3xl'
-            fontWeight='bold'
-            color='red.500'
-            textAlign='center'
-            mt='4'
-          >
-            {new Intl.NumberFormat('es-ES', {
-              style: 'currency',
-              currency: 'EUR'
-            }).format(moto.precio)}{' '}
-            / día
-          </Text>
-
-          <Button
-            size='lg'
-            mt='4'
-            colorScheme={isReserved ? 'red' : 'green'}
-            onClick={isReserved ? handleCancelReservation : openReserveModal}
-          >
-            {isReserved ? 'Cancelar Reserva' : 'Reservar Moto'}
-          </Button>
-
-          <Text fontSize='lg' fontWeight='medium' color='var(--rtc-color-4)'>
-            <strong>Descripción:</strong> {moto.descripcion}
-          </Text>
-          <Text fontSize='lg' color='var(--rtc-color-4)'>
-            <strong>Kilómetros:</strong> {moto.km} km
-          </Text>
-          <Text fontSize='lg' color='var(--rtc-color-4)'>
-            <strong>Tipo:</strong> {moto.tipo.join(', ')}
-          </Text>
-
-          <Divider />
-
-          <Box>
-            <Text fontSize='lg' fontWeight='medium' color='var(--rtc-color-4)'>
-              <strong>Propietario:</strong>
-            </Text>
-            <Text fontSize='md' color='var(--rtc-color-4)'>
-              Nombre: {moto.propietario?.nombre || 'No disponible'}
-            </Text>
-            <Text fontSize='md' color='var(--rtc-color-4)'>
-              Email: {moto.propietario?.email || 'No disponible'}
-            </Text>
-            <Button
-              size='sm'
-              mt='2'
-              colorScheme='yellow'
-              bg='var(--rtc-color-2)'
-              onClick={openContactModal}
-            >
-              Contactar
-            </Button>
-          </Box>
-
-          <Divider />
-
-          <Text fontSize='lg' fontWeight='medium' color='var(--rtc-color-4)'>
-            <strong>Reseñas:</strong>
-          </Text>
-
-          {moto.reviews && moto.reviews.length > 0 ? (
-            moto.reviews.map((review, index) => (
-              <Box key={index} p='4' borderWidth='1px' borderRadius='md' mb='2'>
-                <Text fontSize='md' color='var(--rtc-color-4)'>
-                  <strong>Comentario:</strong> {review.comentario}
-                </Text>
-                <Box display='flex' alignItems='center' mt='2'>
-                  <StarRating rating={review.calificacion} />
-                  <Text fontSize='md' color='var(--rtc-color-4)' ml='2'>
-                    {review.calificacion}
-                  </Text>
-                </Box>
-              </Box>
-            ))
-          ) : (
-            <Text fontSize='md' color='var(--rtc-color-4)'>
-              No hay reseñas disponibles.
-            </Text>
-          )}
-        </VStack>
-
+        <MotoInfo
+          moto={moto}
+          isReserved={isReserved}
+          handleCancelReservation={handleCancelReservation}
+          openReserveModal={() => setIsReserveModalOpen(true)}
+          openContactModal={() => setIsContactModalOpen(true)}
+        />
         <ContactModal
           isOpen={isContactModalOpen}
-          onClose={closeContactModal}
+          onClose={() => setIsContactModalOpen(false)}
           contactMessage={contactMessage}
           setContactMessage={setContactMessage}
           handleSendMessage={handleSendMessage}
         />
-
-        <Modal isOpen={isReserveModalOpen} onClose={closeReserveModal}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Reservar Moto</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <FormControl mb='4'>
-                <FormLabel>Fecha de Inicio</FormLabel>
-                <Input
-                  type='date'
-                  value={fechaInicio}
-                  onChange={(e) => setFechaInicio(e.target.value)}
-                />
-              </FormControl>
-              <FormControl mb='4'>
-                <FormLabel>Fecha de Fin</FormLabel>
-                <Input
-                  type='date'
-                  value={fechaFin}
-                  onChange={(e) => setFechaFin(e.target.value)}
-                />
-              </FormControl>
-              <FormControl mb='4'>
-                <FormLabel>Comentarios</FormLabel>
-                <Textarea
-                  value={comentarios}
-                  onChange={(e) => setComentarios(e.target.value)}
-                />
-              </FormControl>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme='blue' mr='3' onClick={handleReserve}>
-                Confirmar Reserva
-              </Button>
-              <Button onClick={closeReserveModal}>Cancelar</Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        <ReserveModal
+          isReserveModalOpen={isReserveModalOpen}
+          closeReserveModal={() => setIsReserveModalOpen(false)}
+          fechaInicio={fechaInicio}
+          setFechaInicio={setFechaInicio}
+          fechaFin={fechaFin}
+          setFechaFin={setFechaFin}
+          comentarios={comentarios}
+          setComentarios={setComentarios}
+          precioTotal={precioTotal}
+          handleReserve={handleReserve}
+        />
       </Box>
     </Box>
   );
