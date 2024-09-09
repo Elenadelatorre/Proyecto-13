@@ -42,10 +42,7 @@ const Formulario = () => {
   }
 
   return (
-    <Box p="4" maxW="600px" mx="auto">
-      <Text fontSize="2xl" fontWeight="bold" mb="4">
-        Suscripción a Ofertas y Promociones
-      </Text>
+    <Box p="4" maxW="1000px" mx="auto"  minH='100vh' pt='80px' pb='80px'>
       <Instrucciones />
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack spacing="4" align="stretch">

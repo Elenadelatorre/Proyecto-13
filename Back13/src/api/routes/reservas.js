@@ -4,10 +4,12 @@ const {
   postReserva,
   deleteReserva,
   updateReserva,
-  getReservasByPropietario
+  getReservasByPropietario,
+  getReservasByUsuario
 } = require('../controllers/reservas');
 const reservasRouter = require('express').Router();
 
+reservasRouter.get('/:userId/reservas-user', getReservasByUsuario);
 reservasRouter.get('/:propietario/reservas', getReservasByPropietario);
 reservasRouter.get('/:id', getReservaById);
 reservasRouter.get('/', getReservas);

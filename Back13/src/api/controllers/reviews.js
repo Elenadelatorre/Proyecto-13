@@ -56,23 +56,39 @@ const getReviewsByPropietario = async (req, res, next) => {
   }
 };
 
+
+const getReviewsByUsuario = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const reviews = await Review.find({ usuario: userId })
+      .populate('moto', 'marca modelo')
+      .populate('propietario', 'nombre email');
+    console.log(reviews);
+    res.json(reviews);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Error obteniendo reseñas del usuario', error });
+  }
+};
+
+
 // POST review
 const postReview = async (req, res, next) => {
   try {
-    console.log(Moto);
-    const newReview = new Review(req.body);
-    const reviewSaved = await newReview.save();
+    const { user, moto, comentario, calificacion } = req.body;
 
-    // Actualizar la moto correspondiente para agregar la nueva reseña
-    await Moto.findByIdAndUpdate(
-      req.body.moto,
-      { $push: { reviews: reviewSaved._id } },
-      { new: true }
-    );
+    const newReview = new Review({
+      user,
+      moto,
+      comentario,
+      calificacion
+    });
 
-    return res.status(200).json(reviewSaved);
+    const savedReview = await newReview.save();
+    res.status(201).json(savedReview);
   } catch (error) {
-    return res.status(400).json('Error en la solicitud' + error.message);
+    res.status(400).json({ message: 'Error en la solicitud', error });
   }
 };
 
@@ -112,6 +128,7 @@ module.exports = {
   getReviews,
   getReviewById,
   getReviewsByPropietario,
+  getReviewsByUsuario,
   postReview,
   updateReview,
   deleteReview

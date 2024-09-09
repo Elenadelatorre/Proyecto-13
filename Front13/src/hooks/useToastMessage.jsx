@@ -9,11 +9,11 @@ const useToastMessage = () => {
       description,
       status,
       duration: 4000,
-      isClosable: true,
+      isClosable: true
     });
   };
 
-  return { showToast };
+  return showToast;
 };
 
 export default useToastMessage;

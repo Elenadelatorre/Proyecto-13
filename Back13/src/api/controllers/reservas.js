@@ -57,6 +57,23 @@ const getReservasByPropietario = async (req, res, next) => {
   }
 };
 
+// GET reservas de un usuario:
+const getReservasByUsuario = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const reservas = await Reserva.find({ usuario: userId }).populate(
+      'moto',
+      'marca modelo imagen'
+    );
+    console.log(reservas);
+    res.json(reservas);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Error obteniendo reservas del usuario', error });
+  }
+};
+
 // Crear una nueva reserva
 const postReserva = async (req, res) => {
   try {
@@ -133,6 +150,7 @@ module.exports = {
   getReservas,
   getReservaById,
   getReservasByPropietario,
+  getReservasByUsuario,
   postReserva,
   updateReserva,
   deleteReserva

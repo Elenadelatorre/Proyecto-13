@@ -12,6 +12,7 @@ const reservaSchema = new mongoose.Schema(
       ref: 'users',
       required: true,
     },
+  
     fechaInicio: {
       type: Date,
       required: true,

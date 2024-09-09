@@ -1,5 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useContext, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setIsAuthenticated(false);
+    Navigate('/');
   };
 
   return (

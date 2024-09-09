@@ -8,14 +8,15 @@ import {
   Text,
   VStack,
   Flex,
-  useToast,
   Select
 } from '@chakra-ui/react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import useToastMessage from '../../hooks/useToastMessage';
+import { POST } from '../../utils/fetchData';
 
 const AddMotoForm = () => {
-  const toast = useToast();
+  const showToast = useToastMessage();
   const navigate = useNavigate();
 
   const methods = useForm({
@@ -27,10 +28,10 @@ const AddMotoForm = () => {
       año: '',
       km: '',
       precio: '',
-      estado: 'Disponible', // Estado predeterminado
+      estado: 'Disponible',
       imagen: '',
       descripcion: '',
-      propietario: '' // Campo para el propietario
+      propietario: ''
     }
   });
 
@@ -42,64 +43,54 @@ const AddMotoForm = () => {
   } = methods;
 
   useEffect(() => {
-    // Obtener el usuario desde localStorage
-    const user = localStorage.getItem('user');
-    if (user) {
-      try {
-        const userObject = JSON.parse(user);
-        console.log('Usuario cargado desde localStorage:', userObject); // Verifica el objeto del usuario
+    const userId = localStorage.getItem('user'); // Aquí obtenemos el valor directamente
 
-        if (userObject && userObject._id) {
-          console.log('ID de usuario:', userObject._id); // Verifica el ID del usuario
-          // Establecer el ID del propietario en el formulario
-          setValue('propietario', userObject._id);
-        }
-      } catch (error) {
-        console.error('Error al parsear el objeto del usuario:', error);
-      }
+    if (userId) {
+      setValue('propietario', userId); // Asignamos el ID directamente al campo propietario
     } else {
-      console.warn('No se encontró un usuario en localStorage');
+      showToast(
+        'Error',
+        'No se pudo obtener la información del usuario.',
+        'error'
+      );
     }
-  }, [setValue]);
+  }, [setValue, showToast]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async () => {
+    const userId = localStorage.getItem('user');
+    const data = {
+      VIN: methods.getValues('VIN'),
+      marca: methods.getValues('marca'),
+      modelo: methods.getValues('modelo'),
+      tipo: methods.getValues('tipo'),
+      año: methods.getValues('año'),
+      km: methods.getValues('km'),
+      precio: methods.getValues('precio'),
+      estado: methods.getValues('estado'),
+      imagen: methods.getValues('imagen'),
+      descripcion: methods.getValues('descripcion'),
+      propietario: userId
+    };
     try {
-      const response = await fetch('http://localhost:3000/api/v1/motos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+      const response = await POST('/motos', data);
 
-      if (!response.ok) throw new Error('Error al crear la moto');
+      if (response.error) throw new Error('Error al crear la moto');
 
-      const result = await response.json();
-      toast({
-        title: 'Moto agregada',
-        description: `La moto ${result.marca} ${result.modelo} ha sido añadida exitosamente.`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true
-      });
+      showToast(
+        'Moto agregada',
+        `La moto ${response.marca} ${response.modelo} ha sido añadida exitosamente.`,
+        'success'
+      );
 
       navigate('/motos');
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 0);
+      window.scrollTo(0, 0);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      });
+      showToast('Error', `Hubo un problema al crear la moto: ${error.message}`, 'error');
     }
   };
 
   return (
-    <Box p='4' maxW='800px' mx='auto'>
+    <Box p='4' maxW='800px' mx='auto' minH='8vh' pt='80px' pb='80px'>
       <FormProvider {...methods}>
         <Box as='form' onSubmit={handleSubmit(onSubmit)} noValidate>
           <VStack spacing='4' align='stretch' mb='4'>
@@ -239,7 +230,6 @@ const AddMotoForm = () => {
             )}
           </FormControl>
 
-          {/* Campo de Propietario ID de solo lectura */}
           <FormControl>
             <FormLabel>Propietario ID</FormLabel>
             <Input type='text' readOnly {...register('propietario')} />

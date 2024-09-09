@@ -3,94 +3,245 @@ import {
   Box,
   Heading,
   Text,
-  Stack,
-  useToast,
-  Spinner,
   VStack,
   Divider,
+  Image,
+  Button,
+  Textarea,
+  Select,
+  FormControl,
+  FormLabel
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import Loading from '../../components/Loading/Loading';
+import useToastMessage from '../../hooks/useToastMessage';
 
 const MyMotos = () => {
   const [reservas, setReservas] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const toast = useToast();
-  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+  const [newReview, setNewReview] = useState({
+    motoId: '',
+    comentario: '',
+    calificacion: 1
+  });
+
+const showToast = useToastMessage();
+
 
   useEffect(() => {
     const fetchReservasYReviews = async () => {
       setLoading(true);
       try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        if (!user || !user._id) {
+        const userId = localStorage.getItem('user');
+        if (!userId) {
           throw new Error('Usuario no autenticado');
         }
 
         // Fetch de reservas
-        const responseReservas = await fetch(`http://localhost:3000/api/v1/reservas/${user._id}/reservas`);
+        const responseReservas = await fetch(
+          `http://localhost:3000/api/v1/reservas/${userId}/reservas-user`
+        );
+        if (!responseReservas.ok) {
+          throw new Error('Error en la solicitud de reservas');
+        }
         const reservasData = await responseReservas.json();
         setReservas(reservasData);
 
         // Fetch de reseñas
-        const responseReviews = await fetch(`http://localhost:3000/api/v1/reviews/${user._id}/reviews`);
+        const responseReviews = await fetch(
+          `http://localhost:3000/api/v1/reviews/${userId}/reviews-user`
+        );
+        if (!responseReviews.ok) {
+          throw new Error('Error en la solicitud de reseñas');
+        }
         const reviewsData = await responseReviews.json();
         setReviews(reviewsData);
-
       } catch (error) {
-        toast({
-          title: 'Error',
-          description: error.message,
-          status: 'error',
-          duration: 5000,
-          isClosable: true
-        });
+        setError(error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchReservasYReviews();
-  }, [toast]);
+  }, []);
 
-  if (loading) {
+  const submitReview = async () => {
+    if (!newReview.comentario || !newReview.calificacion) {
+      alert('Completa todos los campos');
+      return;
+    }
+    console.log(newReview);
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          moto: newReview.motoId,
+          comentario: newReview.comentario,
+          calificacion: newReview.calificacion,
+          user: localStorage.getItem('user')
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al enviar la reseña');
+      }
+
+      const data = await response.json();
+      showToast('Reseña enviada', 'Tu reseña ha sido enviada exitosamente' ,'success'); 
+      setNewReview({ motoId: '', comentario: '', calificacion: 1 });
+      // Puedes actualizar el estado de reviews si es necesario
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  if (loading)
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minH="100vh">
-        <Spinner size="xl" />
-      </Box>
+      <Loading isVisible={loading} message='Cargando reservas y reseñas...' />
     );
-  }
 
   return (
-    <Box p="4" maxW="800px" mx="auto">
-      <Heading mb="6">Mis Reservas y Reseñas</Heading>
-      
-      <VStack spacing={6} align="stretch">
+    <Box p='4' maxW='800px' mx='auto' minH='100vh' pt='50px'>
+      <VStack spacing={6} align='stretch'>
         <Box>
-          <Heading size="md" mb="4">Reservas</Heading>
+          <Heading size='xl' mb='4'>
+            Reservas
+          </Heading>
           {reservas.length > 0 ? (
-            reservas.map((reserva, index) => (
-              <Box key={index} p="4" borderWidth="1px" borderRadius="md" boxShadow="md">
-                <Text><strong>Nombre del cliente:</strong> {reserva.clienteNombre}</Text>
-                <Text><strong>Fecha de inicio:</strong> {new Date(reserva.fechaInicio).toLocaleDateString()}</Text>
-                <Text><strong>Fecha de fin:</strong> {new Date(reserva.fechaFin).toLocaleDateString()}</Text>
-                <Text><strong>Precio:</strong> €{reserva.precio}</Text>
+            reservas.map((reserva) => (
+              <Box
+                key={reserva._id}
+                p='4'
+                borderWidth='1px'
+                borderRadius='md'
+                boxShadow='md'
+              >
+                <Image
+                  src={reserva.moto.imagen || '/default-image.png'}
+                  alt={`${reserva.moto.marca} ${reserva.moto.modelo}`}
+                  boxSize={{ base: '200px', md: '400px' }}
+                  objectFit='contain'
+                  maxWidth='100%'
+                  maxHeight='100%'
+                  m='auto'
+                />
+                <Text>
+                  <strong>Moto:</strong> {reserva.moto.marca}{' '}
+                  {reserva.moto.modelo}
+                </Text>
+                <Text>
+                  <strong>Fecha de inicio:</strong>{' '}
+                  {new Date(reserva.fechaInicio).toLocaleDateString()}
+                </Text>
+                <Text>
+                  <strong>Fecha de fin:</strong>{' '}
+                  {new Date(reserva.fechaFin).toLocaleDateString()}
+                </Text>
+                <Text>
+                  <strong>Precio:</strong> {reserva.precioTotal} €
+                </Text>
+                <Text>
+                  <strong>Comentarios:</strong> {reserva.comentarios}
+                </Text>
+                <Button
+                  mt='4'
+                  colorScheme='yellow'
+                  bg='var(--rtc-color-2)'
+                  onClick={() =>
+                    setNewReview({ ...newReview, motoId: reserva.moto._id })
+                  }
+                >
+                  Dejar Reseña
+                </Button>
               </Box>
             ))
           ) : (
             <Text>No tienes reservas todavía.</Text>
           )}
         </Box>
-        <Divider />
 
+        {/* Formulario de Reseña */}
+        {newReview.motoId && (
+          <Box mt='6' p='4' borderWidth='1px' borderRadius='md' boxShadow='md'>
+            <Heading size='md' mb='4'>
+              Deja una Reseña
+            </Heading>
+            <Text>
+              <strong>Moto:</strong>{' '}
+              {
+                reservas.find((r) => r.moto._id === newReview.motoId)?.moto
+                  .modelo
+              }
+            </Text>
+            <FormControl mt='4'>
+              <FormLabel>Comentario</FormLabel>
+              <Textarea
+                placeholder='Escribe tu comentario aquí...'
+                value={newReview.comentario}
+                onChange={(e) =>
+                  setNewReview((prev) => ({
+                    ...prev,
+                    comentario: e.target.value
+                  }))
+                }
+              />
+            </FormControl>
+            <FormControl mt='4'>
+              <FormLabel>Calificación</FormLabel>
+              <Select
+                value={newReview.calificacion}
+                onChange={(e) =>
+                  setNewReview((prev) => ({
+                    ...prev,
+                    calificacion: parseInt(e.target.value)
+                  }))
+                }
+              >
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              mt='4'
+              colorScheme='yellow'
+              bg='var(--rtc-color-2)'
+              onClick={submitReview}
+            >
+              Enviar Reseña
+            </Button>
+          </Box>
+        )}
+        <Divider />
         <Box>
-          <Heading size="md" mb="4">Reseñas</Heading>
+          <Heading size='xl' mb='4'>
+            Reseñas
+          </Heading>
           {reviews.length > 0 ? (
             reviews.map((review, index) => (
-              <Box key={index} p="4" borderWidth="1px" borderRadius="md" boxShadow="md">
-                <Text><strong>Reseña de:</strong> {review.clienteNombre}</Text>
-                <Text><strong>Comentario:</strong> {review.comentario}</Text>
-                <Text><strong>Puntuación:</strong> {review.puntuacion}/5</Text>
+              <Box
+                key={index}
+                p='4'
+                borderWidth='1px'
+                borderRadius='md'
+                boxShadow='md'
+              >
+                <Text>
+                  <strong>Reseña de:</strong> {review.user}
+                </Text>
+                <Text>
+                  <strong>Comentario:</strong> {review.comentario}
+                </Text>
+                <Text>
+                  <strong>Puntuación:</strong> {review.calificacion}/5
+                </Text>
               </Box>
             ))
           ) : (
