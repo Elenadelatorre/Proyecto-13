@@ -7,7 +7,8 @@ const getReservas = async (req, res, next) => {
   try {
     const reservas = await Reserva.find()
       .populate('moto', 'VIN marca modelo')
-      .populate('cliente', 'nombre email');
+      .populate('usuario', 'nombre email')
+      .populate('propietario', 'nombre email');
     res.status(200).json(reservas);
   } catch (error) {
     return res.status(400).json('Error en la solicitud: ' + error.message);
@@ -20,7 +21,8 @@ const getReservaById = async (req, res, next) => {
     const { id } = req.params;
     const reserva = await Reserva.findById(id)
       .populate('moto', 'VIN marca modelo')
-      .populate('cliente', 'nombre email');
+      .populate('usuario', 'nombre email')
+      .populate('propietario', 'nombre email');
     if (!reserva) {
       return res.status(404).json({ message: 'Reserva no encontrada' });
     }
@@ -47,7 +49,8 @@ const getReservasByPropietario = async (req, res, next) => {
 
     const reservas = await Reserva.find({ moto: { $in: motoIds } })
       .populate('moto', 'VIN marca modelo')
-      .populate('cliente', 'nombre email');
+      .populate('usuario', 'nombre email')
+      .populate('propietario', 'nombre email');
 
     return res.status(200).json(reservas);
   } catch (error) {
@@ -61,10 +64,9 @@ const getReservasByPropietario = async (req, res, next) => {
 const getReservasByUsuario = async (req, res) => {
   try {
     const { userId } = req.params;
-    const reservas = await Reserva.find({ usuario: userId }).populate(
-      'moto',
-      'marca modelo imagen'
-    );
+    const reservas = await Reserva.find({ usuario: userId })
+      .populate('moto', 'marca modelo imagen')
+      .populate('propietario', 'nombre');
     console.log(reservas);
     res.json(reservas);
   } catch (error) {
@@ -75,32 +77,41 @@ const getReservasByUsuario = async (req, res) => {
 };
 
 // Crear una nueva reserva
+// Crear una nueva reserva
 const postReserva = async (req, res) => {
   try {
-    const { moto, usuario, fechaInicio, fechaFin, precioTotal, comentarios } =
-      req.body;
+    const {
+      moto,
+      usuario,
+      propietario,
+      fechaInicio,
+      fechaFin,
+      precioTotal,
+      comentarios
+    } = req.body;
 
-    // Buscar la moto
     const motoExistente = await Moto.findById(moto);
     if (!motoExistente)
       return res.status(404).json({ message: 'Moto no encontrada' });
 
-    // Buscar el usuario
-    const usuarioExistente = await User.findById(usuario); // Usa directamente el ID del usuario
+    const usuarioExistente = await User.findById(usuario);
     if (!usuarioExistente)
       return res.status(404).json({ message: 'Usuario no encontrado' });
 
-    // Crear la reserva
+    const propietarioExistente = await User.findById(propietario);
+    if (!propietarioExistente)
+      return res.status(404).json({ message: 'Propietario no encontrado' });
+
     const nuevaReserva = new Reserva({
       moto,
-      usuario: usuarioExistente._id, // Usamos el ID del usuario
+      usuario,
+      propietario,
       fechaInicio,
       fechaFin,
       precioTotal,
       comentarios
     });
 
-    // Guardar la reserva
     const reservaGuardada = await nuevaReserva.save();
     res.status(201).json(reservaGuardada);
   } catch (error) {
@@ -111,7 +122,7 @@ const postReserva = async (req, res) => {
 };
 
 // Actualizar una reserva
-const updateReserva = async (req, res, next) => {
+const updateReserva = async (req, res) => {
   try {
     const { id } = req.params;
     const reservaExistente = await Reserva.findById(id);
@@ -122,27 +133,27 @@ const updateReserva = async (req, res, next) => {
     Object.assign(reservaExistente, req.body);
     await reservaExistente.save();
 
-    return res.status(200).json(reservaExistente);
+    res.status(200).json(reservaExistente);
   } catch (error) {
-    return res
-      .status(400)
-      .json({ message: 'Error al actualizar reserva', error });
+    res.status(400).json({ message: 'Error al actualizar reserva', error });
   }
 };
 
 // Eliminar una reserva
-const deleteReserva = async (req, res, next) => {
+const deleteReserva = async (req, res) => {
   try {
     const { id } = req.params;
     const reservaEliminada = await Reserva.findByIdAndDelete(id);
     if (!reservaEliminada) {
       return res.status(404).json({ message: 'Reserva no encontrada' });
     }
-    return res
+    res
       .status(200)
       .json({ message: 'Reserva eliminada', reserva: reservaEliminada });
   } catch (error) {
-    return res.status(400).json('Error en la solicitud: ' + error.message);
+    res
+      .status(400)
+      .json({ message: 'Error en la solicitud: ' + error.message });
   }
 };
 

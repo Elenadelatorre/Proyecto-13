@@ -5,7 +5,7 @@ const Moto = require('../models/motos');
 const getReviews = async (req, res, next) => {
   try {
     const reviews = await Review.find()
-      .populate('moto', 'marca modelo')
+      .populate('moto', 'marca modelo propietario')
       .populate('user', 'nombre email');
     res.status(200).json(reviews);
   } catch (error) {
@@ -19,7 +19,8 @@ const getReviewById = async (req, res, next) => {
     const { id } = req.params;
     const review = await Review.findById(id)
       .populate('moto', 'marca modelo')
-      .populate('user', 'nombre email');
+      .populate('user', 'nombre email')
+      .populate('propietario', 'nombre email');
     return res.status(200).json(review);
   } catch (error) {
     return res.status(400).json('Error en la solicitud' + error.message);
@@ -27,35 +28,27 @@ const getReviewById = async (req, res, next) => {
 };
 
 // Obtener reseñas de las motos de un propietario:
-const getReviewsByPropietario = async (req, res, next) => {
+const getReviewsByPropietario = async (req, res) => {
   try {
-    const { propietarioId } = req.params;
+    const propietarioId = req.params.propietarioId;
+    console.log('ID del propietario:', propietarioId);
 
-    const motos = await Moto.find({ propietario: propietarioId }).populate({
-      path: 'reviews',
-      populate: {
-        path: 'user',
-        select: 'nombre email'
-      }
-    });
-
-    // Si no se encuentran motos
-    if (!motos || motos.length === 0) {
+    if (!propietarioId) {
       return res
-        .status(404)
-        .json({ message: 'No se encontraron motos para este propietario.' });
+        .status(400)
+        .json({ message: 'El ID del propietario es requerido' });
     }
 
-    const reseñas = motos.flatMap((moto) => moto.reviews);
+    // Encuentra las reseñas donde el campo propietario coincide con el ID proporcionado
+    const reviews = await Review.find({ propietario: propietarioId }).exec();
+    console.log('Reseñas encontradas:', reviews);
 
-    return res.status(200).json(reseñas);
+    res.json(reviews);
   } catch (error) {
-    return res
-      .status(400)
-      .json({ message: 'Error en la solicitud: ' + error.message });
+    console.error('Error al obtener reseñas:', error);
+    res.status(500).json({ message: 'Error al obtener las reseñas' });
   }
 };
-
 
 const getReviewsByUsuario = async (req, res) => {
   try {
@@ -63,7 +56,7 @@ const getReviewsByUsuario = async (req, res) => {
     const reviews = await Review.find({ usuario: userId })
       .populate('moto', 'marca modelo')
       .populate('propietario', 'nombre email');
-    console.log(reviews);
+    console.log('Reseñas del usuario:', reviews);
     res.json(reviews);
   } catch (error) {
     res
@@ -72,15 +65,24 @@ const getReviewsByUsuario = async (req, res) => {
   }
 };
 
-
 // POST review
-const postReview = async (req, res, next) => {
+const postReview = async (req, res) => {
   try {
-    const { user, moto, comentario, calificacion } = req.body;
+    const { user, motoId, comentario, calificacion } = req.body;
 
+    // Buscar la moto para obtener el propietario
+    const motoData = await Moto.findById(motoId).select('propietario');
+    if (!motoData) {
+      return res.status(404).json({ message: 'Moto no encontrada' });
+    }
+
+    const propietario = motoData.propietario;
+
+    // Crear la reseña
     const newReview = new Review({
       user,
-      moto,
+      propietario,
+      moto: motoId,
       comentario,
       calificacion
     });

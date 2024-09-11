@@ -10,7 +10,7 @@ const {
 const reservasRouter = require('express').Router();
 
 reservasRouter.get('/:userId/reservas-user', getReservasByUsuario);
-reservasRouter.get('/:propietario/reservas', getReservasByPropietario);
+reservasRouter.get('/:propietarioId/reservas', getReservasByPropietario);
 reservasRouter.get('/:id', getReservaById);
 reservasRouter.get('/', getReservas);
 reservasRouter.post('/', postReserva);

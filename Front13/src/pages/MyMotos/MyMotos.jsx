@@ -10,10 +10,20 @@ import {
   Textarea,
   Select,
   FormControl,
-  FormLabel
+  FormLabel,
+  Flex,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure
 } from '@chakra-ui/react';
 import Loading from '../../components/Loading/Loading';
 import useToastMessage from '../../hooks/useToastMessage';
+import { POST, GET } from '../../utils/fetchData';
 
 const MyMotos = () => {
   const [reservas, setReservas] = useState([]);
@@ -23,11 +33,12 @@ const MyMotos = () => {
   const [newReview, setNewReview] = useState({
     motoId: '',
     comentario: '',
-    calificacion: 1
+    calificacion: 1,
+    propietario: ''
   });
 
-const showToast = useToastMessage();
-
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const showToast = useToastMessage();
 
   useEffect(() => {
     const fetchReservasYReviews = async () => {
@@ -37,28 +48,17 @@ const showToast = useToastMessage();
         if (!userId) {
           throw new Error('Usuario no autenticado');
         }
+        console.log('UserId obtenido:', userId);
 
-        // Fetch de reservas
-        const responseReservas = await fetch(
-          `http://localhost:3000/api/v1/reservas/${userId}/reservas-user`
-        );
-        if (!responseReservas.ok) {
-          throw new Error('Error en la solicitud de reservas');
-        }
-        const reservasData = await responseReservas.json();
+        // GET para obtener reservas
+        const reservasData = await GET(`/reservas/${userId}/reservas-user`);
         setReservas(reservasData);
 
-        // Fetch de reseñas
-        const responseReviews = await fetch(
-          `http://localhost:3000/api/v1/reviews/${userId}/reviews-user`
-        );
-        if (!responseReviews.ok) {
-          throw new Error('Error en la solicitud de reseñas');
-        }
-        const reviewsData = await responseReviews.json();
+        // GET para obtener las reseñas de las motos del usuario
+        const reviewsData = await GET(`/reviews/${userId}`);
         setReviews(reviewsData);
-      } catch (error) {
-        setError(error);
+      } catch (err) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -67,188 +67,161 @@ const showToast = useToastMessage();
     fetchReservasYReviews();
   }, []);
 
-  const submitReview = async () => {
-    if (!newReview.comentario || !newReview.calificacion) {
-      alert('Completa todos los campos');
-      return;
-    }
-    console.log(newReview);
-    try {
-      const response = await fetch('http://localhost:3000/api/v1/reviews', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          moto: newReview.motoId,
-          comentario: newReview.comentario,
-          calificacion: newReview.calificacion,
-          user: localStorage.getItem('user')
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al enviar la reseña');
-      }
-
-      const data = await response.json();
-      showToast('Reseña enviada', 'Tu reseña ha sido enviada exitosamente' ,'success'); 
-      setNewReview({ motoId: '', comentario: '', calificacion: 1 });
-      // Puedes actualizar el estado de reviews si es necesario
-    } catch (error) {
-      alert(error.message);
-    }
+  const handleReviewChange = (e) => {
+    const { name, value } = e.target;
+    setNewReview((prev) => ({ ...prev, [name]: value }));
   };
 
-  if (loading)
-    return (
-      <Loading isVisible={loading} message='Cargando reservas y reseñas...' />
-    );
+  const handleReviewSubmit = async () => {
+    try {
+      // Asegúrate de que el campo `propietario` sea el ID del propietario de la moto
+      const selectedReserva = reservas.find(
+        (reserva) => reserva.moto._id === newReview.motoId
+      );
 
+      if (!selectedReserva) {
+        showToast('Error', 'Moto no seleccionada', 'error');
+        return;
+      }
+
+      await POST('/reviews', {
+        user: localStorage.getItem('user'),
+        motoId: newReview.motoId,
+        comentario: newReview.comentario,
+        calificacion: newReview.calificacion
+      });
+
+      showToast('Reseña añadida', 'Reseña añadida correctamente', 'success');
+      setNewReview({ motoId: '', comentario: '', calificacion: 1 });
+      onClose();
+    } catch (err) {
+      showToast(
+        'Error al añadir reseña',
+        'Hubo un error al añadir la reseña',
+        'error'
+      );
+    }
+  };
   return (
-    <Box p='4' maxW='800px' mx='auto' minH='100vh' pt='50px'>
-      <VStack spacing={6} align='stretch'>
-        <Box>
+    <Box p={5}>
+      <Divider my={4} />
+      {loading && <Loading />}
+      {error && <Text color='red.500'>{error}</Text>}
+      {!loading && !error && (
+        <VStack spacing={4}>
           <Heading size='xl' mb='4'>
             Reservas
           </Heading>
-          {reservas.length > 0 ? (
-            reservas.map((reserva) => (
-              <Box
-                key={reserva._id}
-                p='4'
-                borderWidth='1px'
-                borderRadius='md'
-                boxShadow='md'
-              >
+          {reservas.map((reserva) => (
+            <Box
+              key={reserva._id}
+              borderWidth='1px'
+              borderRadius='md'
+              p={6}
+              width='500px'
+              shadow='md'
+            >
+              <Flex direction='row' align='center'>
                 <Image
-                  src={reserva.moto.imagen || '/default-image.png'}
-                  alt={`${reserva.moto.marca} ${reserva.moto.modelo}`}
-                  boxSize={{ base: '200px', md: '400px' }}
-                  objectFit='contain'
-                  maxWidth='100%'
-                  maxHeight='100%'
-                  m='auto'
+                  src={reserva.moto.imagen}
+                  boxSize='100px'
+                  objectFit='cover'
+                  borderRadius='md'
+                  alt='Moto'
+                  w='100'
                 />
-                <Text>
-                  <strong>Moto:</strong> {reserva.moto.marca}{' '}
-                  {reserva.moto.modelo}
-                </Text>
-                <Text>
-                  <strong>Fecha de inicio:</strong>{' '}
-                  {new Date(reserva.fechaInicio).toLocaleDateString()}
-                </Text>
-                <Text>
-                  <strong>Fecha de fin:</strong>{' '}
-                  {new Date(reserva.fechaFin).toLocaleDateString()}
-                </Text>
-                <Text>
-                  <strong>Precio:</strong> {reserva.precioTotal} €
-                </Text>
-                <Text>
-                  <strong>Comentarios:</strong> {reserva.comentarios}
-                </Text>
-                <Button
-                  mt='4'
-                  colorScheme='yellow'
-                  bg='var(--rtc-color-2)'
-                  onClick={() =>
-                    setNewReview({ ...newReview, motoId: reserva.moto._id })
-                  }
-                >
-                  Dejar Reseña
-                </Button>
-              </Box>
-            ))
-          ) : (
-            <Text>No tienes reservas todavía.</Text>
-          )}
-        </Box>
-
-        {/* Formulario de Reseña */}
-        {newReview.motoId && (
-          <Box mt='6' p='4' borderWidth='1px' borderRadius='md' boxShadow='md'>
-            <Heading size='md' mb='4'>
-              Deja una Reseña
-            </Heading>
-            <Text>
-              <strong>Moto:</strong>{' '}
-              {
-                reservas.find((r) => r.moto._id === newReview.motoId)?.moto
-                  .modelo
-              }
-            </Text>
-            <FormControl mt='4'>
-              <FormLabel>Comentario</FormLabel>
-              <Textarea
-                placeholder='Escribe tu comentario aquí...'
-                value={newReview.comentario}
-                onChange={(e) =>
+                <Box ml={4}>
+                  <Text fontSize='lg' fontWeight='bold'>
+                    {reserva.moto.marca} {reserva.moto.modelo}
+                  </Text>
+                  <Text>
+                    Fecha de inicio:{' '}
+                    {new Date(reserva.fechaInicio).toLocaleDateString()}
+                  </Text>
+                  <Text>
+                    Fecha de fin:{' '}
+                    {new Date(reserva.fechaFin).toLocaleDateString()}
+                  </Text>
+                  <Text>Precio total: {reserva.precioTotal} €</Text>
+                </Box>
+              </Flex>
+              <Button
+                mt={4}
+                colorScheme='yellow'
+                bg='var(--rtc-color-2)'
+                onClick={() => {
                   setNewReview((prev) => ({
                     ...prev,
-                    comentario: e.target.value
-                  }))
-                }
-              />
-            </FormControl>
-            <FormControl mt='4'>
-              <FormLabel>Calificación</FormLabel>
-              <Select
-                value={newReview.calificacion}
-                onChange={(e) =>
-                  setNewReview((prev) => ({
-                    ...prev,
-                    calificacion: parseInt(e.target.value)
-                  }))
-                }
+                    motoId: reserva.moto._id
+                  }));
+                  onOpen();
+                }}
               >
-                {[1, 2, 3, 4, 5].map((num) => (
-                  <option key={num} value={num}>
-                    {num}
+                Añadir Reseña
+              </Button>
+            </Box>
+          ))}
+        </VStack>
+      )}
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Añadir Reseña</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <FormControl mb={4}>
+              <FormLabel>Moto</FormLabel>
+              <Select
+                name='motoId'
+                value={newReview.motoId}
+                onChange={handleReviewChange}
+              >
+                <option value=''>Selecciona una moto</option>
+                {reservas.map((reserva) => (
+                  <option key={reserva.moto._id} value={reserva.moto._id}>
+                    {reserva.moto.marca} {reserva.moto.modelo}
                   </option>
                 ))}
               </Select>
             </FormControl>
+            <FormControl mb={4}>
+              <FormLabel>Comentario</FormLabel>
+              <Textarea
+                name='comentario'
+                value={newReview.comentario}
+                onChange={handleReviewChange}
+              />
+            </FormControl>
+            <FormControl mb={4}>
+              <FormLabel>Calificación</FormLabel>
+              <Select
+                name='calificacion'
+                value={newReview.calificacion}
+                onChange={handleReviewChange}
+              >
+                {[1, 2, 3, 4, 5].map((val) => (
+                  <option key={val} value={val}>
+                    {val}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
             <Button
-              mt='4'
               colorScheme='yellow'
               bg='var(--rtc-color-2)'
-              onClick={submitReview}
+              onClick={handleReviewSubmit}
             >
-              Enviar Reseña
+              Enviar
             </Button>
-          </Box>
-        )}
-        <Divider />
-        <Box>
-          <Heading size='xl' mb='4'>
-            Reseñas
-          </Heading>
-          {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <Box
-                key={index}
-                p='4'
-                borderWidth='1px'
-                borderRadius='md'
-                boxShadow='md'
-              >
-                <Text>
-                  <strong>Reseña de:</strong> {review.user}
-                </Text>
-                <Text>
-                  <strong>Comentario:</strong> {review.comentario}
-                </Text>
-                <Text>
-                  <strong>Puntuación:</strong> {review.calificacion}/5
-                </Text>
-              </Box>
-            ))
-          ) : (
-            <Text>No tienes reseñas todavía.</Text>
-          )}
-        </Box>
-      </VStack>
+            <Button variant='outline' ml={3} onClick={onClose}>
+              Cancelar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };

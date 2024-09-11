@@ -5,32 +5,37 @@ const reservaSchema = new mongoose.Schema(
     moto: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'motos',
-      required: true,
+      required: true
     },
     usuario: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'users',
-      required: true,
+      required: true
     },
-  
+    propietario: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',
+      required: true
+    },
+
     fechaInicio: {
       type: Date,
-      required: true,
+      required: true
     },
     fechaFin: {
       type: Date,
-      required: true,
+      required: true
     },
     precioTotal: {
       type: Number,
-      required: true,
+      required: true
     },
-    
+
     // Opcional: Campo para comentarios adicionales
     comentarios: {
       type: String,
       trim: true,
-      maxlength: [500, 'El comentario no puede tener más de 500 caracteres'],
+      maxlength: [500, 'El comentario no puede tener más de 500 caracteres']
     }
   },
   { timestamps: true, collection: 'reservas' }
