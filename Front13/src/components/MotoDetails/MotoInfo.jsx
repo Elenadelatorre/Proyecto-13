@@ -1,4 +1,3 @@
-// src/components/MotoDetails/MotoInfo.js
 import { VStack, Text, Image, Divider, Button, Box } from '@chakra-ui/react';
 import StarRating from '../../components/MotoDetails/StarRating';
 

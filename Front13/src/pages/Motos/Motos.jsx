@@ -4,6 +4,7 @@ import { ThemeContext } from '../../Providers/ThemeProvider';
 import Loading from '../../components/Loading/Loading';
 import FilterPanel from '../../components/Motos/FilterPanel';
 import MotoCard from '../../components/Motos/MotoCard';
+import { GET } from '../../utils/fetchData';
 
 const Motos = () => {
   const { light } = useContext(ThemeContext);
@@ -17,10 +18,10 @@ const Motos = () => {
   const [onlyAvailable, setOnlyAvailable] = useState(false);
 
   useEffect(() => {
+    console.log('Soy el componente Motos.jsx y me renderizo');
     const fetchMotos = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/v1/motos');
-        const data = await response.json();
+        const data = await GET('/motos');
 
         // Ordenar las motos por nombre de la marca
         const sortedMotos = data.sort((a, b) => a.marca.localeCompare(b.marca));
@@ -28,7 +29,7 @@ const Motos = () => {
         setFilteredMotos(sortedMotos);
 
         // Obtener tipos únicos y ordenados para el filtro
-        const tipos = [...new Set(data.flatMap(moto => moto.tipo))].sort();
+        const tipos = [...new Set(data.flatMap((moto) => moto.tipo))].sort();
         setUniqueTipos(tipos);
 
         setLoading(false);
@@ -49,15 +50,15 @@ const Motos = () => {
     let filtered = motos;
 
     if (onlyAvailable) {
-      filtered = filtered.filter(moto => moto.estado === 'Disponible');
+      filtered = filtered.filter((moto) => moto.estado === 'Disponible');
     }
 
     if (filterType) {
-      filtered = filtered.filter(moto => moto.tipo.includes(filterType));
+      filtered = filtered.filter((moto) => moto.tipo.includes(filterType));
     }
 
     if (filterMarca) {
-      filtered = filtered.filter(moto =>
+      filtered = filtered.filter((moto) =>
         moto.marca.toLowerCase().includes(filterMarca.toLowerCase())
       );
     }
@@ -69,7 +70,7 @@ const Motos = () => {
 
   return (
     <Box p='50px' pt='50px' minH='100vh'>
-      <Loading isVisible={loading} message="Cargando motos..." />
+      <Loading isVisible={loading} message='Cargando motos...' />
       <Flex
         direction={{ base: 'column', md: 'row' }}
         mb='20px'
@@ -96,7 +97,7 @@ const Motos = () => {
           flex='1'
           direction={{ base: 'column', md: 'row' }}
         >
-          {filteredMotos.map(moto => (
+          {filteredMotos.map((moto) => (
             <MotoCard key={moto._id} moto={moto} light={light} />
           ))}
         </Flex>

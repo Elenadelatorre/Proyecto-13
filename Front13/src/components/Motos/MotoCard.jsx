@@ -3,7 +3,6 @@ import { Box, Text, Image, Badge, Flex } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import RatingStars from './RAtingStars';
 
-
 const MotoCard = ({ moto, light }) => {
   return (
     <RouterLink key={moto._id} to={`/motos/${moto._id}`}>
@@ -71,7 +70,8 @@ const MotoCard = ({ moto, light }) => {
           <Box display='flex' alignItems='center' mb='2'>
             <RatingStars rating={moto.averageRating} />
             <Text fontSize='md' color='gray.500' ml='2'>
-              ({moto.reviewCount} {moto.reviewCount === 1 ? 'reseña' : 'reseñas'})
+              ({moto.reviewCount}{' '}
+              {moto.reviewCount === 1 ? 'reseña' : 'reseñas'})
             </Text>
           </Box>
           <Text

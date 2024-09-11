@@ -2,7 +2,7 @@ const Reserva = require('../models/reservas');
 const Moto = require('../models/motos');
 const User = require('../models/users');
 
-// Obtener todas las reservas
+// GET todas las reservas
 const getReservas = async (req, res, next) => {
   try {
     const reservas = await Reserva.find()
@@ -15,7 +15,7 @@ const getReservas = async (req, res, next) => {
   }
 };
 
-// Obtener una reserva por ID
+// GET una reserva por ID
 const getReservaById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -32,7 +32,7 @@ const getReservaById = async (req, res, next) => {
   }
 };
 
-// Obtener reservas de las motos de un propietario
+// GET reservas de las motos de un propietario
 const getReservasByPropietario = async (req, res, next) => {
   try {
     const { propietarioId } = req.params;
@@ -76,8 +76,7 @@ const getReservasByUsuario = async (req, res) => {
   }
 };
 
-// Crear una nueva reserva
-// Crear una nueva reserva
+// POST una nueva reserva
 const postReserva = async (req, res) => {
   try {
     const {

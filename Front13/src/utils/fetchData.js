@@ -15,7 +15,7 @@ const fetchData = async (url, options = {}) => {
       throw new Error(errorData.message || 'Error en la solicitud');
     }
 
-    return response.json(); // Devuelve el JSON directamente
+    return response.json(); 
   } catch (error) {
     console.error('Error en la llamada fetch:', error);
     throw error;

@@ -1,7 +1,7 @@
 const Review = require('../models/reviews');
 const Moto = require('../models/motos');
 
-// Obtener todas las reviews:
+// GET todas las reviews:
 const getReviews = async (req, res, next) => {
   try {
     const reviews = await Review.find()
@@ -13,7 +13,7 @@ const getReviews = async (req, res, next) => {
   }
 };
 
-//Obtener una review:
+//GET una review:
 const getReviewById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -27,7 +27,7 @@ const getReviewById = async (req, res, next) => {
   }
 };
 
-// Obtener reseñas de las motos de un propietario:
+// GET reseñas de las motos de un propietario:
 const getReviewsByPropietario = async (req, res) => {
   try {
     const propietarioId = req.params.propietarioId;
@@ -52,6 +52,7 @@ const getReviewsByPropietario = async (req, res) => {
   }
 };
 
+// GET reseñas de un usuario
 const getReviewsByUsuario = async (req, res) => {
   try {
     const { userId } = req.params;

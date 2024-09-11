@@ -1,4 +1,3 @@
-// motoReducer.js
 export const initialState = {
   motos: [],
   loading: false,

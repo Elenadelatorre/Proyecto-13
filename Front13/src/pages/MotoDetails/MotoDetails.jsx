@@ -43,14 +43,19 @@ const MotoDetails = () => {
   };
 
   useEffect(() => {
-      const fetchMotoData = async () => {
+    const fetchMotoData = async () => {
       try {
         const data = await GET(`/motos/${id}`);
+        console.log('Datos de la moto:', data);
         dispatch({ type: actionTypes.UPDATE_MOTO, payload: data });
         setIsReserved(data.estado === 'No disponible');
       } catch (error) {
         console.error('Error al obtener la moto:', error);
-        showToast('Error', 'Hubo un problema al cargar los detalles de la moto.', 'error');
+        showToast(
+          'Error',
+          'Hubo un problema al cargar los detalles de la moto.',
+          'error'
+        );
       }
     };
     fetchMotoData();
@@ -61,7 +66,11 @@ const MotoDetails = () => {
   }, [fechaInicio, fechaFin]);
 
   const handleSendMessage = () => {
-    showToast('Mensaje Enviado', 'Tu mensaje ha sido enviado exitosamente.', 'success');
+    showToast(
+      'Mensaje Enviado',
+      'Tu mensaje ha sido enviado exitosamente.',
+      'success'
+    );
     setContactMessage('');
     setIsContactModalOpen(false);
   };
@@ -77,19 +86,20 @@ const MotoDetails = () => {
         const reservaResponse = await POST(`/reservas`, {
           moto: id,
           usuario: userId,
+          propietario: moto.propietario,
           fechaInicio,
           fechaFin,
           precioTotal,
-          comentarios,
+          comentarios
         });
 
-        const reservaId = reservaResponse._id; // Asegúrate de obtener el ID correctamente
+        const reservaId = reservaResponse._id; 
 
         await PUT(`/motos/${id}`, { estado: 'No disponible' });
 
         dispatch({
           type: actionTypes.UPDATE_MOTO,
-          payload: { ...moto, estado: 'No disponible', reservaId },
+          payload: { ...moto, estado: 'No disponible', reservaId }
         });
 
         // Guardar la reserva en localStorage con el ID de la reserva
@@ -101,10 +111,18 @@ const MotoDetails = () => {
         console.log('Reserva guardada en localStorage:', reservations);
 
         setIsReserved(true);
-        showToast('Reserva Confirmada', 'Has reservado la moto exitosamente.', 'success');
+        showToast(
+          'Reserva Confirmada',
+          'Has reservado la moto exitosamente.',
+          'success'
+        );
         setIsReserveModalOpen(false);
       } catch (error) {
-        showToast('Error', `Hubo un problema al reservar la moto: ${error.message}`, 'error');
+        showToast(
+          'Error',
+          `Hubo un problema al reservar la moto: ${error.message}`,
+          'error'
+        );
       }
     }
   };
@@ -114,11 +132,17 @@ const MotoDetails = () => {
       try {
         const storedMotoState = localStorage.getItem('moto_reservations');
         const reservations = JSON.parse(storedMotoState || '[]');
-        const reserva = reservations.find((reservation) => reservation.id === id);
+        const reserva = reservations.find(
+          (reservation) => reservation.id === id
+        );
 
         if (!reserva || !reserva.reservaId) {
           console.log('Reserva no encontrada en localStorage:', reservations);
-          showToast('Error', 'No se encontró la reserva asociada a esta moto.', 'error');
+          showToast(
+            'Error',
+            'No se encontró la reserva asociada a esta moto.',
+            'error'
+          );
           return;
         }
 
@@ -133,7 +157,7 @@ const MotoDetails = () => {
         if (putResponse) {
           dispatch({
             type: actionTypes.UPDATE_MOTO,
-            payload: { ...moto, estado: 'Disponible' },
+            payload: { ...moto, estado: 'Disponible' }
           });
           setIsReserved(false);
 
@@ -141,15 +165,28 @@ const MotoDetails = () => {
           const updatedReservations = reservations.filter(
             (reservation) => reservation.reservaId !== reserva.reservaId
           );
-          localStorage.setItem('moto_reservations', JSON.stringify(updatedReservations));
-          console.log('LocalStorage después de la eliminación:', updatedReservations);
+          localStorage.setItem(
+            'moto_reservations',
+            JSON.stringify(updatedReservations)
+          );
+          console.log(
+            'LocalStorage después de la eliminación:',
+            updatedReservations
+          );
 
-          showToast('Reserva Cancelada', 'Has cancelado la reserva de la moto.', 'success');
+          showToast(
+            'Reserva Cancelada',
+            'Has cancelado la reserva de la moto.',
+            'success'
+          );
         } else {
-          showToast('Error', 'Hubo un problema al actualizar el estado de la moto.', 'error');
+          showToast(
+            'Error',
+            'Hubo un problema al actualizar el estado de la moto.',
+            'error'
+          );
         }
       } catch (error) {
-        console.error('Error canceling reservation:', error);
         showToast('Error', 'Hubo un problema al cancelar la reserva.', 'error');
       }
     }

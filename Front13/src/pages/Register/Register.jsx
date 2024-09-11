@@ -11,7 +11,9 @@ import {
   Link
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { POST } from '../../utils/fetchData';
 import { useAuth } from '../../context/AuthContext';
+import useToastMessage from '../../hooks/useToastMessage';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -20,47 +22,26 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
-  const toast = useToast();
+  const showToast = useToastMessage();
   const navigate = useNavigate();
 
   const handleRegister = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        'http://localhost:3000/api/v1/users/register',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ nombre: name, email, contraseña: password })
-        }
-      );
+      // Registro del usuario
+      const registerResponse = await POST('/users/register', {
+        nombre: name,
+        email,
+        contraseña: password
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al registrar el usuario');
-      }
+      // Iniciar sesión automáticamente
+      const loginResponse = await POST('/users/login', {
+        email,
+        contraseña: password
+      });
 
-      // Registro exitoso, ahora iniciar sesión automáticamente
-      const loginResponse = await fetch(
-        'http://localhost:3000/api/v1/users/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, contraseña: password })
-        }
-      );
-
-      if (!loginResponse.ok) {
-        throw new Error(
-          'Registro exitoso, pero error al iniciar sesión automáticamente.'
-        );
-      }
-
-      const { token, user } = await loginResponse.json();
+      const { token, user } = loginResponse;
 
       // Almacena el token y la información del usuario
       localStorage.setItem('token', token);
@@ -68,25 +49,16 @@ const Register = () => {
 
       login({ token, user });
 
-      toast({
-        title: 'Registro e inicio de sesión exitosos.',
-        description: 'Te has registrado e iniciado sesión correctamente.',
-        status: 'success',
-        duration: 4000,
-        isClosable: true
-      });
+      showToast(
+        'Registro e inicio de sesión exitosos.',
+        'Te has registrado e iniciado sesión correctamente.',
+        'success'
+      );
 
       navigate('/');
-      return;
     } catch (error) {
       setError(error.message);
-      toast({
-        title: 'Error.',
-        description: error.message,
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      });
+      showToast('Error.', error.message, 'error');
     } finally {
       setLoading(false);
     }

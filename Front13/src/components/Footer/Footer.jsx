@@ -7,8 +7,8 @@ const Footer = () => {
       as="footer"
       position="relative" bottom="0" width="100%"
       bgGradient="linear(to-r, var(--rtc-color-2), #83a9ec)"
-      color="var(--rtc-color-0)" // Blanco
-      py={{ base: '20px', md: '30px' }} // Padding top y bottom responsivo
+      color="var(--rtc-color-0)" 
+      py={{ base: '20px', md: '30px' }} 
       textAlign="center"
     >
       <Box maxW="1200px" mx="auto" px={{ base: '10px', md: '20px' }}>

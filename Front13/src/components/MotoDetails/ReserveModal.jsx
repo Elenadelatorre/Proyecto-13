@@ -1,4 +1,3 @@
-// src/components/MotoDetails/ReserveModal.js
 import {
   Modal,
   ModalOverlay,

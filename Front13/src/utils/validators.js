@@ -1,4 +1,3 @@
-// Componente para validar los campos del formulario de suscripción a ofertas y promociones:
 export const validateFields = (fields) => {
   const errors = {};
 

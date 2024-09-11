@@ -8,7 +8,7 @@ import {
   VStack,
   Container
 } from '@chakra-ui/react';
-import { CheckIcon } from '@chakra-ui/icons'; // Asegúrate de tener este paquete instalado
+import { CheckIcon } from '@chakra-ui/icons'; 
 
 const Instrucciones = () => {
   return (

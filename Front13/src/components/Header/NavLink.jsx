@@ -17,12 +17,12 @@ const NavLink = ({ href, children, inDrawer = false }) => {
       transition="color 0.3s ease, border-bottom 0.3s ease"
       _hover={{
         color: inDrawer ? 'gray.900' : 'var(--rtc-color-2)',
-        textDecoration: 'none'  // Ensure no underline on hover
+        textDecoration: 'none'  
       }}
       display="block"
-      p={3} // Padding for easier clicking/touching
-      borderRadius="md" // Rounded corners for better aesthetics
-      bg={inDrawer ? 'gray.100' : 'transparent'} // Background color in drawer
+      p={3} 
+      borderRadius="md" 
+      bg={inDrawer ? 'gray.100' : 'transparent'} 
     >
       {children}
     </Link>

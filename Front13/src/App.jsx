@@ -12,9 +12,8 @@ import { useContext } from 'react';
 import { ThemeContext } from './Providers/ThemeProvider';
 import MotoDetails from './pages/MotoDetails/MotoDetails';
 import Register from './pages/Register/Register';
-import AddMoto from './pages/AddMoto/AddMoto';
-import MyMotosPage from './pages/MyMotos/MyMotos';
 import MyMotos from './pages/MyMotos/MyMotos';
+import AddMotoForm from './pages/AddMoto/AddMotoForm';
 
 function App() {
   const { light } = useContext(ThemeContext);
@@ -34,7 +33,7 @@ function App() {
         <Route path='/motos' element={<Motos />}></Route>
         <Route path='/motos/:id' element={<MotoDetails />}></Route>
         <Route path='/suscripcion' element={<Suscripcion />}></Route>
-        <Route path='/addMoto' element={<AddMoto />}></Route>
+        <Route path='/addMoto' element={<AddMotoForm />}></Route>
         <Route path='/myMotos' element={<MyMotos />}></Route>
         <Route path='*' element={<NotFound />}></Route>
       </Routes>
