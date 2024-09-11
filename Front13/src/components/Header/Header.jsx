@@ -87,7 +87,6 @@ const Header = () => {
         <Flex as='ul' display={{ base: 'none', md: 'flex' }} justifyContent='space-between' alignItems='center' height='100%' margin='0' padding='0' listStyleType='none' flex='1'>
           {showNavLinks && (
             <>
-              <NavLink href='/' ml={{ base: 0, md: linkSpacing }}>Inicio</NavLink>
               <NavLink href='/motos' ml={{ base: 0, md: linkSpacing }} p={2} borderRadius='md' bg='gray.100' color='gray.800'>Alquiler de Motos</NavLink>
               {isAuthenticated && (
                 <>

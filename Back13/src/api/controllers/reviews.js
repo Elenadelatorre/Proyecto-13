@@ -40,7 +40,9 @@ const getReviewsByPropietario = async (req, res) => {
     }
 
     // Encuentra las reseñas donde el campo propietario coincide con el ID proporcionado
-    const reviews = await Review.find({ propietario: propietarioId }).exec();
+    const reviews = await Review.find({ propietario: propietarioId })
+      .populate('moto', 'marca modelo')
+      .populate('user', 'nombre email');
     console.log('Reseñas encontradas:', reviews);
 
     res.json(reviews);
@@ -53,7 +55,7 @@ const getReviewsByPropietario = async (req, res) => {
 const getReviewsByUsuario = async (req, res) => {
   try {
     const { userId } = req.params;
-    const reviews = await Review.find({ usuario: userId })
+    const reviews = await Review.find({ user: userId })
       .populate('moto', 'marca modelo')
       .populate('propietario', 'nombre email');
     console.log('Reseñas del usuario:', reviews);

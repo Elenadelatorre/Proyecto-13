@@ -27,7 +27,7 @@ import { POST, GET } from '../../utils/fetchData';
 
 const MyMotos = () => {
   const [reservas, setReservas] = useState([]);
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState([]); // Inicializa como array vacío
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newReview, setNewReview] = useState({
@@ -48,15 +48,15 @@ const MyMotos = () => {
         if (!userId) {
           throw new Error('Usuario no autenticado');
         }
-        console.log('UserId obtenido:', userId);
 
         // GET para obtener reservas
         const reservasData = await GET(`/reservas/${userId}/reservas-user`);
         setReservas(reservasData);
 
         // GET para obtener las reseñas de las motos del usuario
-        const reviewsData = await GET(`/reviews/${userId}`);
-        setReviews(reviewsData);
+        const reviewsData = await GET(`/reviews/${userId}/reviews-propietario`); // Asegúrate de usar el endpoint correcto
+        console.log('Reseñas obtenidas:', reviewsData);
+        setReviews(reviewsData || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -74,7 +74,6 @@ const MyMotos = () => {
 
   const handleReviewSubmit = async () => {
     try {
-      // Asegúrate de que el campo `propietario` sea el ID del propietario de la moto
       const selectedReserva = reservas.find(
         (reserva) => reserva.moto._id === newReview.motoId
       );
@@ -102,9 +101,9 @@ const MyMotos = () => {
       );
     }
   };
+
   return (
-    <Box p={5}>
-      <Divider my={4} />
+    <Box p='50px' mb='80px'>
       {loading && <Loading />}
       {error && <Text color='red.500'>{error}</Text>}
       {!loading && !error && (
@@ -160,7 +159,34 @@ const MyMotos = () => {
                 Añadir Reseña
               </Button>
             </Box>
-          ))}
+          ))}{' '}
+          : (<Text>No tienes reseñas.</Text>
+          )
+          <Divider my={4} />
+          <Heading size='xl' mb='4'>
+            Reseñas Recibidas
+          </Heading>
+          {Array.isArray(reviews) && reviews.length > 0 ? (
+            reviews.map((review) => (
+              <Box
+                key={review._id}
+                borderWidth='1px'
+                borderRadius='md'
+                p={6}
+                width='500px'
+                shadow='md'
+                mb={4}
+              >
+                <Text fontSize='lg' fontWeight='bold'>
+                  Moto: {review.moto.marca} {review.moto.modelo}
+                </Text>
+                <Text>Comentario: {review.comentario}</Text>
+                <Text>Calificación: {review.calificacion} estrellas</Text>
+              </Box>
+            ))
+          ) : (
+            <Text>No tienes reseñas.</Text>
+          )}
         </VStack>
       )}
 
