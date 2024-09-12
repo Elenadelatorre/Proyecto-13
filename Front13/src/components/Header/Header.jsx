@@ -1,25 +1,11 @@
 import React, { useEffect } from 'react';
-import {
-  Box,
-  Flex,
-  Button,
-  useBreakpointValue,
-  IconButton,
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  DrawerHeader,
-  DrawerBody,
-  useDisclosure,
-  Divider,
-  Link
-} from '@chakra-ui/react';
-import { HamburgerIcon } from '@chakra-ui/icons';
+import { Box, Flex, useBreakpointValue, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, useDisclosure, Divider, Button } from '@chakra-ui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import NavLink from '../Header/NavLink';
+import NavLink from './NavLink';
 import ChangeTheme from '../ChangeTheme/ChangeTheme';
+import MobileMenu from './MobileMenu';
+import DesktopMenu from './DesktopMenu';
 
 const Header = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -28,10 +14,8 @@ const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const buttonSize = useBreakpointValue({ base: 'sm', md: 'md' });
-  const linkSpacing = useBreakpointValue({ base: 2, md: 4 });
   const showNavLinks = useBreakpointValue({ base: false, md: true });
 
-  // Redirigir o actualizar cuando cambia el estado de autenticación
   useEffect(() => {
     if (isAuthenticated && location.pathname === '/login') {
       navigate('/');
@@ -58,145 +42,15 @@ const Header = () => {
         p={{ base: 2, md: 4 }}
         flex='1'
       >
-        <IconButton
-          aria-label='Open Menu'
-          icon={<HamburgerIcon />}
-          display={{ base: 'flex', md: 'none' }}
-          onClick={onOpen}
-          ml={4}
-          position='absolute'
-          left={2}
+        <MobileMenu isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+
+        <DesktopMenu 
+          isAuthenticated={isAuthenticated} 
+          showNavLinks={showNavLinks} 
+          buttonSize={buttonSize} 
+          logout={logout} 
+          navigate={navigate} 
         />
-
-        <Flex
-          display={{ base: 'flex', md: 'none' }}
-          alignItems='center'
-          justifyContent='center'
-          flex='1'
-        >
-          <Link href='/'>
-            <Box as='img' src='./assets/moto.png' alt='Logo' height='70px' />
-          </Link>
-        </Flex>
-
-        <Flex
-          alignItems='center'
-          display={{ base: 'none', md: 'flex' }}
-          mr={{ base: 0, md: 4 }}
-        >
-          <Link href='/'>
-            <Box
-              as='img'
-              src='./assets/moto.png'
-              alt='Logo'
-              height='60px'
-              mr={10}
-            />
-          </Link>
-        </Flex>
-
-        <Flex
-          as='ul'
-          display={{ base: 'none', md: 'flex' }}
-          justifyContent='space-between'
-          alignItems='center'
-          height='100%'
-          margin='0'
-          padding='0'
-          listStyleType='none'
-          flex='1'
-        >
-          {showNavLinks && (
-            <>
-              <NavLink
-                href='/motos'
-                ml={{ base: 0, md: linkSpacing }}
-                p={2}
-                borderRadius='md'
-                bg='gray.100'
-                color='gray.800'
-              >
-                Alquiler de Motos
-              </NavLink>
-              {isAuthenticated && (
-                <>
-                  <NavLink
-                    href='/myMotos'
-                    ml={{ base: 0, md: linkSpacing }}
-                    p={2}
-                    borderRadius='md'
-                    bg='gray.100'
-                    color='gray.800'
-                  >
-                    Mis reservas y reseñas
-                  </NavLink>
-                  <NavLink
-                    href='/AddMoto'
-                    ml={{ base: 0, md: linkSpacing }}
-                    p={2}
-                    borderRadius='md'
-                    bg='gray.100'
-                    color='gray.800'
-                  >
-                    Añadir moto
-                  </NavLink>
-                </>
-              )}
-              <NavLink
-                href='/suscripcion'
-                ml={{ base: 0, md: linkSpacing }}
-                p={2}
-                borderRadius='md'
-                bg='gray.100'
-                color='gray.800'
-              >
-                Ofertas Exclusivas
-              </NavLink>
-            </>
-          )}
-        </Flex>
-
-        <Flex
-          alignItems='center'
-          flexDirection={{ base: 'row', md: 'row' }}
-          justifyContent='flex-end'
-        >
-          {useBreakpointValue({ base: false, md: true }) && (
-            <>
-              {isAuthenticated ? (
-                <Button
-                  colorScheme='red'
-                  onClick={logout}
-                  size={buttonSize}
-                  mt={{ base: 2, md: 0 }}
-                  ml={{ base: 0, md: 4 }}
-                >
-                  Cerrar Sesión
-                </Button>
-              ) : (
-                location.pathname !== '/login' && (
-                  <Button
-                    colorScheme='yellow'
-                    color='var(--rtc-color-4)'
-                    onClick={() => navigate('/login')}
-                    size={buttonSize}
-                    mt={{ base: 2, md: 0 }}
-                    ml={{ base: 0, md: 4 }}
-                  >
-                    Iniciar Sesión
-                  </Button>
-                )
-              )}
-
-              <Box
-                ml={{ base: 0, md: 10 }}
-                display={{ base: 'none', md: 'flex' }}
-              >
-                <ChangeTheme />
-              </Box>
-            </>
-          )}
-        </Flex>
       </Flex>
 
       <Drawer isOpen={isOpen} onClose={onClose} placement='right'>
