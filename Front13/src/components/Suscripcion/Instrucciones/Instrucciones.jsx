@@ -8,7 +8,7 @@ import {
   VStack,
   Container
 } from '@chakra-ui/react';
-import { CheckIcon } from '@chakra-ui/icons'; 
+import { CheckIcon } from '@chakra-ui/icons';
 
 const Instrucciones = () => {
   return (
@@ -22,7 +22,7 @@ const Instrucciones = () => {
       position='relative'
       overflow='hidden'
     >
-      <Container maxW='container.xl' centerContent>
+      <Container maxW='container.xl' centerContent color={'var(--rtc-color-4)'}>
         <Text fontSize='2xl' fontWeight='bold' mb='4' textAlign='center'>
           ¡Gracias por tu interés en nuestras ofertas y promociones!
         </Text>

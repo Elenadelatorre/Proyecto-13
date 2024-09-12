@@ -19,7 +19,7 @@ const MotoCard = ({ moto, light }) => {
           transform: 'scale(1.05)',
           boxShadow: 'lg'
         }}
-        backgroundColor={light ? 'white' : 'gray.800'}
+        backgroundColor={light ? 'white' : 'gray.600'}
         display='flex'
         flexDirection='column'
         justifyContent='space-between'
@@ -29,7 +29,7 @@ const MotoCard = ({ moto, light }) => {
             fontSize='xl'
             fontWeight='bold'
             mb='2'
-            color='var(--rtc-color-4)'
+            color={light ? 'var(--rtc-color-4)' : 'white'}
           >
             {moto.marca}
           </Text>
@@ -56,15 +56,15 @@ const MotoCard = ({ moto, light }) => {
           <Text
             fontSize='lg'
             fontWeight='bold'
-            color='var(--rtc-color-4)'
+            color={light ? 'var(--rtc-color-4)' : 'white'}
             mb='2'
           >
             {moto.modelo}
           </Text>
-          <Text fontSize='md' color='gray.500' mb='2'>
+          <Text fontSize='md' color={light ? 'gray.500' : 'white'} mb='2'>
             Tipo: {moto.tipo.join(', ')}
           </Text>
-          <Text fontSize='md' color='gray.500' mb='2'>
+          <Text fontSize='md' color={light ? 'gray.500' : 'white'} mb='2'>
             Año: {moto.año}
           </Text>
           <Box display='flex' alignItems='center' mb='2'>
@@ -78,6 +78,9 @@ const MotoCard = ({ moto, light }) => {
             fontSize='xl'
             fontWeight='bold'
             color='red.500'
+            bg={light ? 'none' : 'white'}
+            borderRadius='md'
+            
             textAlign='center'
             mt='4'
           >

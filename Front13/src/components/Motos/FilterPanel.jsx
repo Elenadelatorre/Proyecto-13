@@ -19,12 +19,12 @@ const FilterPanel = ({
       borderWidth='1px'
       borderRadius='lg'
       boxShadow='sm'
-      backgroundColor={light ? 'white' : 'gray.800'}
+      backgroundColor={light ? 'white' : 'gray.600'}
     >
       <Button
         colorScheme='green'
         mb='10px'
-        onClick={() => setOnlyAvailable(prev => !prev)}
+        onClick={() => setOnlyAvailable((prev) => !prev)}
       >
         {onlyAvailable ? 'Mostrar Todas las Motos' : 'Mostrar Disponibles'}
       </Button>
@@ -34,9 +34,10 @@ const FilterPanel = ({
         onChange={(e) => setFilterType(e.target.value)}
         w='100%'
         mb='10px'
+        color= {light ? 'var(--rtc-color-4)' : 'gray.300'}
       >
-        {uniqueTipos.map(tipo => (
-          <option key={tipo} value={tipo}>
+        {uniqueTipos.map((tipo) => (
+          <option key={tipo} value={tipo} >
             {tipo}
           </option>
         ))}
