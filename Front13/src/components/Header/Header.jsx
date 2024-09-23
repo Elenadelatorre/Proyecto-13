@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Box, Flex, useBreakpointValue, Drawer, DrawerOverlay, DrawerContent, DrawerCloseButton, DrawerHeader, DrawerBody, useDisclosure, Divider, Button } from '@chakra-ui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -6,12 +6,14 @@ import NavLink from './NavLink';
 import ChangeTheme from '../ChangeTheme/ChangeTheme';
 import MobileMenu from './MobileMenu';
 import DesktopMenu from './DesktopMenu';
+import { ThemeContext } from '../../Providers/ThemeProvider';
 
 const Header = () => {
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { light } = useContext(ThemeContext);
 
   const buttonSize = useBreakpointValue({ base: 'sm', md: 'md' });
   const showNavLinks = useBreakpointValue({ base: false, md: true });
@@ -28,7 +30,7 @@ const Header = () => {
       height={{ base: '12vh', md: '10vh' }}
       position='relative'
       boxShadow='0px 4px 10px rgba(0, 0, 0, 0.1)'
-      backgroundColor='var(--rtc-color-1)'
+      backgroundColor={light? 'var(--rtc-color-6)': 'var(--rtc-color-1)'}
       px={{ base: 2, md: 4 }}
       display='flex'
       alignItems='center'
