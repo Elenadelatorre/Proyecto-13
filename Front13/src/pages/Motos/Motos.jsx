@@ -5,6 +5,7 @@ import Loading from '../../components/Loading/Loading';
 import FilterPanel from '../../components/Motos/FilterPanel';
 import MotoCard from '../../components/Motos/MotoCard';
 import { GET } from '../../utils/fetchData';
+import { motosBrands } from '../../utils/motosBrands';
 
 const Motos = () => {
   const { light } = useContext(ThemeContext);
@@ -57,7 +58,7 @@ const Motos = () => {
       filtered = filtered.filter((moto) => moto.tipo.includes(filterType));
     }
 
-    if (filterMarca) {
+    if (filterMarca && filterMarca !== 'Todas') {
       filtered = filtered.filter((moto) =>
         moto.marca.toLowerCase().includes(filterMarca.toLowerCase())
       );
@@ -80,6 +81,7 @@ const Motos = () => {
       >
         <FilterPanel
           uniqueTipos={uniqueTipos}
+          uniqueMarcas={motosBrands}
           filterType={filterType}
           setFilterType={setFilterType}
           filterMarca={filterMarca}
@@ -97,9 +99,15 @@ const Motos = () => {
           flex='1'
           direction={{ base: 'column', md: 'row' }}
         >
-          {filteredMotos.map((moto) => (
+          {filteredMotos.length > 0 ? (
+          filteredMotos.map((moto) => (
             <MotoCard key={moto._id} moto={moto} light={light} />
-          ))}
+          ))
+        ) : (
+          <Text fontSize='lg' color='gray.800' textAlign='center' mt='50px' >
+            No hay motos disponibles con los filtros seleccionados.
+          </Text>
+        )}
         </Flex>
       </Flex>
     </Box>

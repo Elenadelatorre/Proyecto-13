@@ -33,7 +33,9 @@ const MyMotos = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const userId = localStorage.getItem('user');
+        const user = JSON.parse(localStorage.getItem('user'));
+        const userId = user ? user._id : null;
+        console.log('User ID:', userId);
         if (!userId) {
           throw new Error('Usuario no autenticado');
         }
@@ -90,7 +92,7 @@ const MyMotos = () => {
 
   return (
     <Box p='50px' mb='80px'>
-      <Loading isVisible={loading} message="Cargando reservas y reseñas..." />
+      <Loading isVisible={loading} message='Cargando reservas y reseñas...' />
       {error && <Text color='red.500'>{error}</Text>}
       {!loading && !error && (
         <VStack spacing={4}>

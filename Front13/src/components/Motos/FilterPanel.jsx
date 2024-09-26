@@ -3,13 +3,13 @@ import { Box, Select, Input, Button } from '@chakra-ui/react';
 
 const FilterPanel = ({
   uniqueTipos,
+  uniqueMarcas,
   filterType,
   setFilterType,
   filterMarca,
   setFilterMarca,
   onlyAvailable,
   setOnlyAvailable,
-  applyFiltersAndSort,
   light
 }) => {
   return (
@@ -34,23 +34,27 @@ const FilterPanel = ({
         onChange={(e) => setFilterType(e.target.value)}
         w='100%'
         mb='10px'
-        color= {light ? 'var(--rtc-color-4)' : 'gray.300'}
+        color={light ? 'var(--rtc-color-4)' : 'gray.500'}
       >
         {uniqueTipos.map((tipo) => (
-          <option key={tipo} value={tipo} >
+          <option key={tipo} value={tipo}>
             {tipo}
           </option>
         ))}
       </Select>
-      <Input
-        placeholder='Buscar por marca'
+      <Select
+        placeholder='Filtrar por marca de moto'
         value={filterMarca}
         onChange={(e) => setFilterMarca(e.target.value)}
+        w='100%'
         mb='10px'
-      />
-      <Button colorScheme='yellow' onClick={applyFiltersAndSort}>
-        Aplicar Filtros
-      </Button>
+      >
+        {uniqueMarcas.map((marca) => (
+          <option key={marca} value={marca}>
+            {marca}
+          </option>
+        ))}
+      </Select>
     </Box>
   );
 };

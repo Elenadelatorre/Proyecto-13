@@ -7,7 +7,6 @@ import {
   Input,
   Stack,
   Text,
-  useToast,
   Link
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +24,17 @@ const Register = () => {
   const showToast = useToastMessage();
   const navigate = useNavigate();
 
-  const handleRegister = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault(); // Prevenir recarga de la página
+    if (!name || !email || !password) {
+      setError('Todos los campos son requeridos.');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
     setLoading(true);
     try {
       // Registro del usuario
@@ -89,58 +98,65 @@ const Register = () => {
         >
           Registro
         </Text>
-        <Stack spacing='4'>
-          <FormControl id='name' isRequired>
-            <FormLabel color='var(--rtc-color-4)'>Nombre completo</FormLabel>
-            <Input
-              type='text'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder='Nombre completo'
+        <form onSubmit={handleRegister}>
+          <Stack spacing='4'>
+            <FormControl id='name' isRequired>
+              <FormLabel color='var(--rtc-color-4)'>Nombre completo</FormLabel>
+              <Input
+                type='text'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder='Nombre completo'
+                color='var(--rtc-color-4)'
+              />
+            </FormControl>
+            <FormControl id='email' isRequired>
+              <FormLabel color='var(--rtc-color-4)'>Email</FormLabel>
+              <Input
+                type='email'
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder='Correo electrónico'
+                color='var(--rtc-color-4)'
+                autoComplete='email'
+              />
+            </FormControl>
+            <FormControl id='password' isRequired>
+              <FormLabel color='var(--rtc-color-4)'>Contraseña</FormLabel>
+              <Input
+                type='password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder='Contraseña'
+                color='var(--rtc-color-4)'
+                autoComplete='new-password'
+              />
+              <Text color='gray.500' fontSize='sm'>
+                La contraseña debe tener al menos 8 caracteres.
+              </Text>
+            </FormControl>
+            {error && <Text color='red.500'>{error}</Text>}
+            <Button
+              type='submit' // Cambiar a type='submit' para enviar el formulario
+              colorScheme='yellow'
+              bg='var(--rtc-color-2)'
+              isLoading={loading}
+            >
+              Registrarse
+            </Button>
+            <Text
+              fontSize='sm'
+              mt='4'
+              textAlign='center'
               color='var(--rtc-color-4)'
-            />
-          </FormControl>
-          <FormControl id='email' isRequired>
-            <FormLabel color='var(--rtc-color-4)'>Email</FormLabel>
-            <Input
-              type='email'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder='Correo electrónico'
-              color='var(--rtc-color-4)'
-            />
-          </FormControl>
-          <FormControl id='password' isRequired>
-            <FormLabel color='var(--rtc-color-4)'>Contraseña</FormLabel>
-            <Input
-              type='password'
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='Contraseña'
-              color='var(--rtc-color-4)'
-            />
-          </FormControl>
-          {error && <Text color='red.500'>{error}</Text>}
-          <Button
-            colorScheme='yellow'
-            bg='var(--rtc-color-2)'
-            isLoading={loading}
-            onClick={handleRegister}
-          >
-            Registrarse
-          </Button>
-          <Text
-            fontSize='sm'
-            mt='4'
-            textAlign='center'
-            color='var(--rtc-color-4)'
-          >
-            ¿Ya tienes una cuenta?{' '}
-            <Link color='blue.500' onClick={() => navigate('/login')}>
-              Inicia sesión aquí
-            </Link>
-          </Text>
-        </Stack>
+            >
+              ¿Ya tienes una cuenta?{' '}
+              <Link color='blue.500' onClick={() => navigate('/login')}>
+                Inicia sesión aquí
+              </Link>
+            </Text>
+          </Stack>
+        </form>
       </Box>
     </Box>
   );

@@ -11,15 +11,15 @@ const ChangeTheme = () => {
       className='theme-icon'
       src={light ? '/assets/energia-limpia.png' : '/assets/luna.png'}
       alt='cambiar de tema'
-      w='50px'
+      w='35px'
       transition='all 0.5s'
       cursor='pointer'
-      border={'2px solid'}
+      border={'1px solid'}
       borderRadius={'full'}
-      borderColor={light? 'var(--rtc-color-0)' : 'var(--rtc-color-4)'}
-      backgroundColor={light? 'var(--rtc-color-0)' : 'var(--rtc-color-0)'}
+      borderColor={light ? 'var(--rtc-color-4)' : 'var(--rtc-color-0)'}
+      backgroundColor={'var(--rtc-color-0)'}
       padding={'5px'}
-      _hover={{ transform: 'scale(1.1)' }}
+      _hover={{ transform: 'scale(1.3)' }}
       onClick={() => setLight(!light)}
     />
   );

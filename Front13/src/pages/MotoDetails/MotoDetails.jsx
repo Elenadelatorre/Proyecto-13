@@ -82,7 +82,10 @@ const MotoDetails = () => {
     }
     if (!isReserved) {
       try {
-        const userId = localStorage.getItem('user');
+        const user = JSON.parse(localStorage.getItem('user'));
+        const userId = user ? user._id : null;
+       
+
         const reservaResponse = await POST(`/reservas`, {
           moto: id,
           usuario: userId,
@@ -93,7 +96,7 @@ const MotoDetails = () => {
           comentarios
         });
 
-        const reservaId = reservaResponse._id; 
+        const reservaId = reservaResponse._id;
 
         await PUT(`/motos/${id}`, { estado: 'No disponible' });
 
@@ -105,7 +108,12 @@ const MotoDetails = () => {
         // Guardar la reserva en localStorage con el ID de la reserva
         const storedMotoState = localStorage.getItem('moto_reservations');
         let reservations = JSON.parse(storedMotoState || '[]');
-        reservations.push({ id, reservaId, estado: 'No disponible' });
+        reservations.push({
+          id,
+          reservaId,
+          estado: 'No disponible',
+          usuario: userId
+        });
         localStorage.setItem('moto_reservations', JSON.stringify(reservations));
 
         console.log('Reserva guardada en localStorage:', reservations);
@@ -146,6 +154,16 @@ const MotoDetails = () => {
           return;
         }
 
+        // Verifica si el usuario autenticado es el propietario de la reserva
+        const userId = localStorage.getItem('user');
+        if (reserva.usuario !== userId) {
+          showToast(
+            'Error',
+            'No puedes cancelar una reserva que no hiciste.',
+            'error'
+          );
+          return;
+        }
         console.log('ID de la reserva:', reserva.reservaId);
 
         // Intenta eliminar la reserva
@@ -220,9 +238,22 @@ const MotoDetails = () => {
         <MotoInfo
           moto={moto}
           isReserved={isReserved}
-          handleCancelReservation={handleCancelReservation}
-          openReserveModal={() => setIsReserveModalOpen(true)}
-          openContactModal={() => setIsContactModalOpen(true)}
+          handleCancelReservation={
+            isAuthenticated ? handleCancelReservation : null
+          }
+          openReserveModal={() => {
+            if (isAuthenticated) {
+              setIsReserveModalOpen(true);
+            } else {
+              navigate('/login'); // Redirige a la página de inicio de sesión
+            }
+          }}
+          openContactModal={() => {
+            if (isAuthenticated) {
+              setIsContactModalOpen(true);
+            }
+          }}
+          isAuthenticated={isAuthenticated}
         />
         <ContactModal
           isOpen={isContactModalOpen}

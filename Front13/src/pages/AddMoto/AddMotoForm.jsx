@@ -44,7 +44,8 @@ const AddMotoForm = () => {
 
   useEffect(() => {
     console.log('Soy el componente AddMotos.jsx y me renderizo');
-    const userId = localStorage.getItem('user');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user ? user._id : null;
 
     if (userId) {
       setValue('propietario', userId);
@@ -58,7 +59,8 @@ const AddMotoForm = () => {
   }, [setValue, showToast]);
 
   const onSubmit = async () => {
-    const userId = localStorage.getItem('user');
+    const user = JSON.parse(localStorage.getItem('user'));
+    const userId = user ? user._id : null;
     const data = {
       VIN: getValues('VIN'),
       marca: getValues('marca'),

@@ -1,12 +1,15 @@
 import { VStack, Text, Image, Divider, Button, Box } from '@chakra-ui/react';
 import StarRating from '../../components/MotoDetails/StarRating';
 
+const user = JSON.parse(localStorage.getItem('user'));
+const userId = user ? user._id : null;
 const MotoInfo = ({
   moto,
   isReserved,
   handleCancelReservation,
   openReserveModal,
-  openContactModal
+  openContactModal,
+  isAuthenticated
 }) => (
   <VStack spacing='4' align='stretch'>
     <Text fontSize='3xl' fontWeight='bold' color='var(--rtc-color-4)'>
@@ -37,14 +40,16 @@ const MotoInfo = ({
       }).format(moto.precio)}{' '}
       / día
     </Text>
-    <Button
-      size='lg'
-      mt='4'
-      colorScheme={isReserved ? 'red' : 'green'}
-      onClick={isReserved ? handleCancelReservation : openReserveModal}
-    >
-      {isReserved ? 'Cancelar Reserva' : 'Reservar Moto'}
-    </Button>
+    {isAuthenticated && moto.propietario._id !== userId && !isReserved && (
+      <Button
+        size='lg'
+        mt='4'
+        colorScheme={isReserved ? 'red' : 'green'}
+        onClick={isReserved ? handleCancelReservation : openReserveModal}
+      >
+        {isReserved ? 'Cancelar Reserva' : 'Reservar Moto'}
+      </Button>
+    )}
     <Text fontSize='lg' fontWeight='medium' color='var(--rtc-color-4)'>
       <strong>Descripción:</strong> {moto.descripcion}
     </Text>
@@ -65,15 +70,17 @@ const MotoInfo = ({
       <Text fontSize='md' color='var(--rtc-color-4)'>
         Email: {moto.propietario?.email || 'No disponible'}
       </Text>
-      <Button
-        size='sm'
-        mt='2'
-        colorScheme='yellow'
-        bg='var(--rtc-color-2)'
-        onClick={openContactModal}
-      >
-        Contactar
-      </Button>
+      {isAuthenticated && (
+        <Button
+          size='sm'
+          mt='2'
+          colorScheme='yellow'
+          bg='var(--rtc-color-2)'
+          onClick={openContactModal}
+        >
+          Contactar
+        </Button>
+      )}
     </Box>
 
     <Divider />

@@ -64,10 +64,16 @@ const getReservasByPropietario = async (req, res, next) => {
 const getReservasByUsuario = async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log(userId);
     const reservas = await Reserva.find({ usuario: userId })
       .populate('moto', 'marca modelo imagen')
       .populate('propietario', 'nombre');
     console.log(reservas);
+    if (reservas.length === 0) {
+      return res
+        .status(404)
+        .json({ message: 'No se encontraron reservas para este usuario.' });
+    }
     res.json(reservas);
   } catch (error) {
     res
@@ -94,6 +100,7 @@ const postReserva = async (req, res) => {
       return res.status(404).json({ message: 'Moto no encontrada' });
 
     const usuarioExistente = await User.findById(usuario);
+    console.log('ID de usuario recibido:', usuario);
     if (!usuarioExistente)
       return res.status(404).json({ message: 'Usuario no encontrado' });
 

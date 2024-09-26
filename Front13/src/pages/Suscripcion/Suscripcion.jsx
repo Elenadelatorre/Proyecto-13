@@ -8,8 +8,7 @@ import {
   Input,
   Select,
   Text,
-  VStack,
-  useToast
+  VStack
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import SuccessMessage from '../../components/Suscripcion/CorrectForm/CorrectForm';
@@ -63,7 +62,7 @@ const Formulario = () => {
               {...register('email', {
                 required: 'Este campo es obligatorio',
                 pattern: {
-                  value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/i,
+                  value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/i,
                   message: 'Correo electrónico no válido'
                 }
               })}
@@ -73,7 +72,7 @@ const Formulario = () => {
             )}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.phone}>
+          <FormControl isInvalid={!!errors.phone} isRequired>
             <FormLabel>Número de Teléfono</FormLabel>
             <Input
               type='tel'
@@ -114,10 +113,11 @@ const Formulario = () => {
             )}
           </FormControl>
 
-          <FormControl isInvalid={!!errors.frequency}>
+          <FormControl isInvalid={!!errors.frequency} isRequired>
             <FormLabel>Frecuencia de Notificaciones</FormLabel>
             <Select
               placeholder='Selecciona la frecuencia'
+              color='gray.500'
               {...register('frequency', {
                 required: 'Este campo es obligatorio'
               })}
