@@ -2,11 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "frontend/package.json",
+      "src": "Front13/package.json",
       "use": "@vercel/react"
     },
     {
-      "src": "backend/index.js", 
+      "src": "Back13/index.js", 
       "use": "@vercel/node"
     }
   ],
@@ -17,7 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/$1" 
+      "dest": "/Front13/$1" 
     }
   ]
 }
