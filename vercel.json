@@ -3,21 +3,24 @@
   "builds": [
     {
       "src": "Front13/package.json",
-      "use": "@vercel/react"
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "Front13/dist"
+      }
     },
     {
-      "src": "Back13/index.js", 
+      "src": "Back13/index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/backend/$1" 
+      "dest": "/Back13/index.js"
     },
     {
       "src": "/(.*)",
-      "dest": "/Front13/$1" 
+      "dest": "/Front13/$1"
     }
   ]
 }
