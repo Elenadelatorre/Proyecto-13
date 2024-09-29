@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, Image, Badge, Flex } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
-import RatingStars from './RAtingStars';
+import RatingStars from './RatingStars';
 
 const MotoCard = ({ moto, light }) => {
   return (
