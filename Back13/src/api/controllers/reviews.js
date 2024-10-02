@@ -73,6 +73,7 @@ const postReview = async (req, res) => {
   try {
     const { user, motoId, comentario, calificacion } = req.body;
 
+    console.log('user:', user);
     // Buscar la moto para obtener el propietario
     const motoData = await Moto.findById(motoId).select('propietario');
     if (!motoData) {
