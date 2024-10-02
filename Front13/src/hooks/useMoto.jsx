@@ -14,7 +14,7 @@ const useMoto = (id) => {
     }
 
     const fetchMoto = async () => {
-      setLoading(true); // Inicia el loading
+      setLoading(true); 
 
       try {
         const data = await GET(`/motos/${id}`);

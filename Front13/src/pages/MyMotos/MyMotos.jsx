@@ -70,6 +70,8 @@ const MyMotos = () => {
         showToast('Error', 'Moto no seleccionada', 'error');
         return;
       }
+
+      // id del 'user:
       const user = JSON.parse(localStorage.getItem('user'));
       const userId = user ? user._id : null;
 

@@ -130,7 +130,7 @@ const AddMotoForm = () => {
             />
           </FormGroup>
           <FormGroup>
-            <FormControl isInvalid={!!errors.tipo}>
+            <FormControl isInvalid={!!errors.tipo} isRequired>
               <FormLabel>Tipo de Moto</FormLabel>
               <Select
                 color={light ? 'var(--rtc-color-4)' : 'gray.500'}
