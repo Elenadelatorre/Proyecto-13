@@ -8,7 +8,7 @@ import {
 import { motosBrands } from '../../../utils/motosBrands';
 
 const MotosBrandSelect = React.forwardRef(({ error }, ref) => (
-  <FormControl isInvalid={!!error}>
+  <FormControl isInvalid={!!error} isRequired>
     <FormLabel htmlFor='moto-brand'>
       ¿Qué marca de motos te interesa más?
     </FormLabel>

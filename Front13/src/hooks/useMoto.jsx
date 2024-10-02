@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { GET } from '../utils/fetchData';
 
 const useMoto = (id) => {
   const [moto, setMoto] = useState(null);
@@ -12,16 +13,20 @@ const useMoto = (id) => {
       return;
     }
 
-    fetch(`http://localhost:3000/api/v1/motos/${id}`)
-      .then(response => response.json())
-      .then(data => {
+    const fetchMoto = async () => {
+      setLoading(true); // Inicia el loading
+
+      try {
+        const data = await GET(`/motos/${id}`);
         setMoto(data);
-        setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         setError(error);
-        setLoading(false);
-      });
+      } finally {
+        setLoading(false); 
+      }
+    };
+
+    fetchMoto();
   }, [id]);
 
   return { moto, loading, error, setMoto };

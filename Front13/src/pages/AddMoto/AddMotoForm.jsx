@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -14,10 +14,12 @@ import useToastMessage from '../../hooks/useToastMessage';
 import { POST } from '../../utils/fetchData';
 import FormField from '../../components/AddMoto/FormField';
 import FormGroup from '../../components/AddMoto/FormGroup';
+import { ThemeContext } from '../../Providers/ThemeProvider';
 
 const AddMotoForm = () => {
   const showToast = useToastMessage();
   const navigate = useNavigate();
+  const { light } = useContext(ThemeContext);
 
   const methods = useForm({
     defaultValues: {
@@ -128,14 +130,30 @@ const AddMotoForm = () => {
             />
           </FormGroup>
           <FormGroup>
-            <FormField
-              name='tipo'
-              label='Tipo'
-              placeholder='Ingrese el tipo de moto'
-              type='text'
-              isRequired
-              error={errors.tipo}
-            />
+            <FormControl isInvalid={!!errors.tipo}>
+              <FormLabel>Tipo de Moto</FormLabel>
+              <Select
+                color={light ? 'var(--rtc-color-4)' : 'gray.500'}
+                {...methods.register('tipo', {
+                  required: 'El tipo de moto es obligatorio'
+                })}
+                placeholder='Seleccione el tipo de moto'
+              >
+                <option value='Cruiser'>Cruiser</option>
+                <option value='Custom'>Custom</option>
+                <option value='Deportiva'>Deportiva</option>
+                <option value='Eléctrica'>Eléctrica</option>
+                <option value='Motocross'>Motocross</option>
+                <option value='Naked'>Naked</option>
+                <option value='Retro'>Retro</option>
+                <option value='Scooter'>Scooter</option>
+                <option value='Trail'>Trail</option>
+                <option value='Turismo'>Turismo</option>
+              </Select>
+              {errors.tipo && (
+                <Text color='red.500'>{errors.tipo.message}</Text>
+              )}
+            </FormControl>
             <FormField
               name='año'
               label='Año'

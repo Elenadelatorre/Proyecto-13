@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Select, Input, Button } from '@chakra-ui/react';
+import { Box, Select, Button } from '@chakra-ui/react';
 
 const FilterPanel = ({
   uniqueTipos,
@@ -48,6 +48,7 @@ const FilterPanel = ({
         onChange={(e) => setFilterMarca(e.target.value)}
         w='100%'
         mb='10px'
+        color={light ? 'var(--rtc-color-4)' : 'gray.500'}
       >
         {uniqueMarcas.map((marca) => (
           <option key={marca} value={marca}>

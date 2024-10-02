@@ -70,9 +70,11 @@ const MyMotos = () => {
         showToast('Error', 'Moto no seleccionada', 'error');
         return;
       }
+      const user = JSON.parse(localStorage.getItem('user'));
+      const userId = user ? user._id : null;
 
       await POST('/reviews', {
-        user: localStorage.getItem('user'),
+        user: userId,
         motoId: newReview.motoId,
         comentario: newReview.comentario,
         calificacion: newReview.calificacion
