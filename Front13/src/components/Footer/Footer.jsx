@@ -1,75 +1,105 @@
-import React from 'react';
-import { Box, Flex, Heading, Text, Link, Stack, Divider } from '@chakra-ui/react';
+import React, { useContext } from 'react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Link,
+  Stack,
+  Divider
+} from '@chakra-ui/react';
+import { ThemeContext } from '../../Providers/ThemeProvider';
 
 const Footer = () => {
+  const { light } = useContext(ThemeContext);
   return (
     <Box
-      as="footer"
-      position="relative" bottom="0" width="100%"
-      bgGradient="linear(to-r, var(--rtc-color-2), #83a9ec)"
-      color="var(--rtc-color-0)" 
-      py={{ base: '20px', md: '30px' }} 
-      textAlign="center"
+      as='footer'
+      position='relative'
+      bottom='0'
+      width='100%'
+      backgroundColor={light ? 'gray.500' : 'gray.700'}
+      color='gray.300'
+      py={{ base: '40px', md: '50px' }}
     >
-      <Box maxW="1200px" mx="auto" px={{ base: '10px', md: '20px' }}>
+      <Box maxW='1200px' mx='auto' px={{ base: '20px', md: '40px' }}>
         <Flex
           direction={{ base: 'column', md: 'row' }}
-          justify="space-between"
-          wrap="wrap"
-          gap="20px"
+          justify='space-between'
+          align='center'
+          wrap='wrap'
+          mb='20px'
         >
-          <Box flex="1" mb={{ base: '20px', md: '0' }}>
-            <Heading as="h4" size="md" color="var(--rtc-color-4)" mb="15px">
-              Información de Contacto
+          <Box mb={{ base: '20px', md: '0' }}>
+            <Heading as='h4' size='md' color='white' mb='10px'>
+              Contacto
             </Heading>
-            <Text color="var(--rtc-color-4)" mb="10px">
-              Dirección: Calle Principal, Ciudad
-            </Text>
-            <Text color="var(--rtc-color-4)" mb="10px">
-              Teléfono: +123456789
-            </Text>
-            <Text color="var(--rtc-color-4)" mb="10px">
-              Email: info@example.com
-            </Text>
+            <Text mb='5px'>Calle Principal, Ciudad</Text>
+            <Text mb='5px'>Teléfono: +123456789</Text>
+            <Text>Email: info@example.com</Text>
           </Box>
-          <Box flex="1" mb={{ base: '20px', md: '0' }}>
-            <Heading as="h4" size="md" color="var(--rtc-color-4)" mb="15px">
+
+          <Box mb={{ base: '20px', md: '0' }}>
+            <Heading as='h4' size='md' color='white' mb='10px'>
               Enlaces Rápidos
             </Heading>
-            <Stack spacing="10px" align="center">
-              <Link href="/" color="var(--rtc-color-0)" fontWeight="bold" _hover={{ textDecoration: 'underline' }}>
+            <Stack spacing='5px'>
+              <Link
+                href='/'
+                _hover={{ textDecoration: 'none', color: 'white' }}
+              >
                 Home
               </Link>
-              <Link href="/motos" color="var(--rtc-color-0)" fontWeight="bold" _hover={{ textDecoration: 'underline' }}>
-                Alquiler de motos
+              <Link
+                href='/motos'
+                _hover={{ textDecoration: 'none', color: 'white' }}
+              >
+                Alquiler de Motos
               </Link>
-              <Link href="/suscripcion" color="var(--rtc-color-0)" fontWeight="bold" _hover={{ textDecoration: 'underline' }}>
+              <Link
+                href='/suscripcion'
+                _hover={{ textDecoration: 'none', color: 'white' }}
+              >
                 Suscripción
               </Link>
             </Stack>
           </Box>
-          <Box flex="1" mb={{ base: '20px', md: '0' }}>
-            <Heading as="h4" size="md" color="var(--rtc-color-4)" mb="15px">
+
+          <Box>
+            <Heading as='h4' size='md' color='white' mb='10px'>
               Síguenos
             </Heading>
-            <Stack direction="row" spacing="10px" justify="center">
-              <Link href="https://facebook.com" color="var(--rtc-color-0)" fontWeight="bold" _hover={{ textDecoration: 'underline' }}>
+            <Stack direction='row' spacing='10px'>
+              <Link
+                href='https://facebook.com'
+                _hover={{ textDecoration: 'none', color: 'white' }}
+              >
                 Facebook
               </Link>
-              <Link href="https://twitter.com" color="var(--rtc-color-0)" fontWeight="bold" _hover={{ textDecoration: 'underline' }}>
+              <Link
+                href='https://twitter.com'
+                _hover={{ textDecoration: 'none', color: 'white' }}
+              >
                 Twitter
               </Link>
-              <Link href="https://instagram.com" color="var(--rtc-color-0)" fontWeight="bold" _hover={{ textDecoration: 'underline' }}>
+              <Link
+                href='https://instagram.com'
+                _hover={{ textDecoration: 'none', color: 'white' }}
+              >
                 Instagram
               </Link>
             </Stack>
           </Box>
         </Flex>
+        <Divider borderColor='gray.800' my='20px' />
+        <Text
+          textAlign='center'
+          fontSize='sm'
+          color={light ? 'gray.800' : 'gray.500'}
+        >
+          &copy; 2024 Elena de la Torre. Todos los derechos reservados.
+        </Text>
       </Box>
-      <Divider borderColor="var(--rtc-color-4)" my="20px" />
-      <Text color="var(--rtc-color-0)">
-        &copy; 2024 Elena de la Torre. Todos los derechos reservados.
-      </Text>
     </Box>
   );
 };

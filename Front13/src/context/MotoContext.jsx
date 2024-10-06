@@ -10,7 +10,7 @@ export const MotoProvider = ({ children }) => {
     const fetchMotos = async () => {
       dispatch({ type: actionTypes.FETCH_MOTOS_REQUEST });
       try {
-        const response = await fetch('http://localhost:3000/api/v1/motos');
+        const response = await fetch('https://back-motos.vercel.app/api/v1/motos');
         const data = await response.json();
         dispatch({ type: actionTypes.FETCH_MOTOS_SUCCESS, payload: data });
       } catch (error) {
